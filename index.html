@@ -494,6 +494,13 @@
 .detailTopNav{display:flex;align-items:center;justify-content:center;gap:4px}
 .detailNavBtn{width:30px;height:30px;border:0;background:transparent;color:#795747;font-size:24px;font-weight:800;padding:0;line-height:1}
 .detailNavBtn:disabled{opacity:.25}
+/* V28 交易模板 */
+#tradeUI .tradeTypeRow{display:flex!important;align-items:center;gap:18px;min-height:34px;margin:0 0 5px}
+#tradeUI .tradeTypeRow label{font-size:14px;white-space:nowrap}
+.tradeTitleRow{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px;align-items:end}
+.tradeTitleRow .tradeAddBtn{width:34px;height:32px;border:1px solid #795747;border-radius:8px;background:#fff;color:#795747;font-size:20px}
+.tradeItems:empty{display:none}
+/* V29 活動－展覽／電影／其它：日期與時間同時使用 generic 日期時間選擇器 */
 </style></head><body><div class="app">
 <section id="home" class="page on"><div class="top"><span>☰</span><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div>
@@ -541,24 +548,14 @@
 
 
 <div id="tradeUI" class="hidden">
-<div class="activityline">
-  <div class="field dtCombined"><button type="button" class="dateTimeBtn" id="tradeDateTimeBtn" onclick="openMainDT('trade')">日期時間</button></div>
-  <div class="locationCombined"><div class="locfield"><div class="field"><input id="tradeLocation" placeholder="地點"></div><button class="mapbtn" onclick="openTradeMap()">📍</button></div></div>
-</div>
-<div class="label">標題</div><div class="field"><input id="tradeTitle"></div>
-<div class="label">姓名／聯絡方式</div><div class="field"><input id="tradeContact"></div>
-<div class="label">買／賣／換</div>
-<div class="tradeTypeRow">
-  <label><input id="tradeBuy" type="checkbox"> 買</label>
-  <label><input id="tradeSell" type="checkbox"> 賣</label>
-  <label><input id="tradeSwap" type="checkbox"> 換</label>
-  <span></span>
-  <button type="button" class="tradeAddBtn" onclick="addTradeItem()">＋</button>
-</div>
+<div class="label">交易／買賣換</div>
+<div class="tradeTypeRow"><label><input id="tradeBuy" type="checkbox"> 買</label><label><input id="tradeSell" type="checkbox"> 賣</label><label><input id="tradeSwap" type="checkbox"> 換</label></div>
+<div class="activityline"><div class="field dtCombined"><button type="button" class="dateTimeBtn" id="tradeDateTimeBtn" onclick="openMainDT('trade')">日期時間</button></div><div class="locationCombined"><div class="locfield"><div class="field"><input id="tradeLocation" placeholder="地點"></div><button class="mapbtn" onclick="openTradeMap()">📍</button></div></div></div>
+<div class="tradeTitleRow"><div><div class="label">標題</div><div class="field"><input id="tradeTitle"></div></div><button type="button" class="tradeAddBtn" onclick="addTradeItem()">＋</button></div>
 <div id="tradeItems" class="tradeItems"></div>
+<div class="label">姓名／聯絡方式</div><div class="field"><input id="tradeContact"></div>
 <div class="label">備註</div><textarea id="tradeMemo" class="memo"></textarea>
 </div>
-
 <div class="card"><div class="secHead">🖼 <span class="grow">活動照片（附件）</span></div>
 <div class="attachBtns"><label class="ab">📷 拍照<input id="camera" type="file" accept="image/*" capture="environment" multiple hidden></label><i></i><label class="ab">📁 選擇檔案<input id="files" type="file" accept="image/*" multiple hidden></label><i></i><span class="muted" id="count">0 張</span></div>
 <div class="photoActions"><label><input id="del30" type="checkbox"> 30天後刪除</label><span class="muted">點縮圖展開／收起</span></div><div id="thumbs" class="thumbs"></div>
@@ -622,7 +619,7 @@ function openTradeMap(){let q=$("#tradeLocation").value;if(q)window.open("https:
 
 function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("#"+id).classList.add("on");scrollTo(0,0)}
 function setSubs(){let m=$("#main").value,s=$("#sub"),old=s.value;s.innerHTML=m==="工作"?'<option>下單</option><option>記事</option>':m==="活動"?'<option>演唱會</option><option>展覽</option><option>電影</option><option>其它</option>':"";if([...s.options].some(o=>o.value===old))s.value=old}
-function ui(){setSubs();let m=$("#main").value,s=$("#sub").value,c=m==="活動"&&s==="演唱會",order=m==="工作"&&s==="下單";$("#subbox").style.visibility=m==="面交"?"hidden":"visible";$("#third").style.visibility=order?"visible":"hidden";$("#concertUI").classList.toggle("hidden",!c);$("#genericUI").classList.toggle("hidden",c);if($("#genericDateLocationRow"))$("#genericDateLocationRow").style.display=order?"none":"grid";if($("#orderScheduleRow"))$("#orderScheduleRow").style.display=order?"grid":"none";if(order){$("#time").value="";$("#location").value="";updateMainDTButtons()}if(c){renderSystems();renderSales();renderPickup()}}
+function ui(){setSubs();let m=$("#main").value,s=$("#sub").value,c=m==="活動"&&s==="演唱會",order=m==="工作"&&s==="下單";$("#subbox").style.visibility=m==="面交"?"hidden":"visible";$("#third").style.visibility=order?"visible":"hidden";$("#concertUI").classList.toggle("hidden",!c);$("#genericUI").classList.toggle("hidden",c);if($("#genericDateLocationRow"))$("#genericDateLocationRow").style.display=order?"none":"grid";if($("#orderScheduleRow"))$("#orderScheduleRow").style.display=order?"grid":"none";if(order){$("#time").value="";$("#location").value="";updateMainDTButtons()}if($("#genericUI .activityline"))$("#genericUI .activityline").classList.toggle("hidden",order);if(c){renderSystems();renderSales();renderPickup()}}
 function toggleSec(id,arrow){let e=$("#"+id),a=$("#"+arrow),hide=!e.classList.contains("hidden");e.classList.toggle("hidden",hide);a.textContent=hide?"›":"⌄"}
 function renderSystems(){let s=$("#ticketSystem"),v=s.value;s.innerHTML=systems.map(x=>`<option>${x.name}</option>`).join("");if(systems.some(x=>x.name===v))s.value=v;renderPickup()}
 function saleDTText(x){return [md(x.date),x.time].filter(Boolean).join(" ")||"日期時間"}
