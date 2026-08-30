@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V16</title>
+<title>我的小秘書 V17</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -228,6 +228,58 @@
 .dateTimeBtn{width:100%;height:100%;border:0;background:transparent;text-align:left;padding:0 5px;font-size:12px;color:#392f2a;white-space:nowrap}
 #genericUI>.activityline{margin-top:4px}
 @media(max-width:390px){.activityline{grid-template-columns:minmax(0,40fr) minmax(0,55fr) minmax(18px,5fr)!important}}
+
+/* V17 - 售票日期時間去外框底色；會員/其它直接輸入 */
+.saleDateTime{border:0!important;background:transparent!important;padding:0!important}
+.saleDateTime button{padding:0!important;background:transparent!important}
+
+/* V18 - 活動/面交/工作：日期時間與地點 2:3，日期時間無框放大；售票資訊不變 */
+#concertUI .activityline,
+#genericUI .activityline{
+  display:grid!important;
+  grid-template-columns:minmax(0,2fr) minmax(0,3fr)!important;
+  gap:3px!important;
+  align-items:center!important;
+}
+#concertUI .activityline .dtCombined,
+#genericUI .activityline .dtCombined{
+  grid-column:1!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  height:34px!important;
+}
+#concertUI .activityline .dateTimeBtn,
+#genericUI .activityline .dateTimeBtn{
+  border:0!important;
+  background:transparent!important;
+  padding:0 3px!important;
+  font-size:16px!important;
+  font-weight:600!important;
+  line-height:34px!important;
+}
+#concertUI .activityline .locationCombined,
+#genericUI .activityline .locationCombined{
+  grid-column:2!important;
+  min-width:0!important;
+}
+#concertUI .activityline .locfield,
+#genericUI .activityline .locfield{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 28px!important;
+  gap:1px!important;
+  align-items:center!important;
+}
+#concertUI .activityline .mapbtn,
+#genericUI .activityline .mapbtn{
+  width:28px!important;
+  min-width:28px!important;
+  height:32px!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+}
+
 </style></head><body><div class="app">
 <section id="home" class="page on"><div class="top"><span>☰</span><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div>
@@ -332,7 +384,7 @@ function renderSales(){let h=sales.map((x,i)=>`<div class="saleRow">
 <div class="field saleDateTime"><button type="button" onclick="openSaleDT(${i})">${saleDTText(x)}</button></div><i></i>
 <div class="field"><select onchange="sales[${i}].type=this.value;sales[${i}].related='';renderSales()"><option ${x.type==="公售"?"selected":""}>公售</option><option ${x.type==="卡友"?"selected":""}>卡友</option><option ${x.type==="會員"?"selected":""}>會員</option><option ${x.type==="其它"?"selected":""}>其它</option></select></div><i></i>
 <div>${relatedHTML(x,i)}</div><button class="del" onclick="sales.splice(${i},1);renderSales()">刪除</button></div>`).join("");$("#saleRows").innerHTML=h||'<div class="muted" style="padding:4px">尚未新增售票資訊</div>'}
-function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員")return `<div class="field related"><span class="prefix">序</span><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;if(x.type==="其它")return `<div class="field related"><span class="prefix">註</span><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
+function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員"||x.type==="其它")return `<div class="field related"><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
 function addBank(i){let b=prompt("輸入銀行名稱");if(b){sales[i].related=b;renderSales()}}
 function currentSystem(){return systems.find(x=>x.name===$("#ticketSystem").value)||systems[0]}
 function systemChanged(){renderPickup()}
