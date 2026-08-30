@@ -1,0 +1,429 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>我的小秘書 V17</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
+.app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
+.top{height:48px;display:grid;grid-template-columns:50px 1fr 58px;align-items:center}.top h1{margin:0;text-align:center;font-size:21px}
+.btn{border:0;border-radius:9px;background:#795747;color:#fff;padding:8px;font-weight:700}.back{border:0;background:none;font-size:27px}
+.card{background:#fff;border:1px solid #e7ddd7;border-radius:12px;margin:6px 0;padding:8px}.secHead{display:flex;align-items:center;gap:6px;font-weight:800;min-height:30px}
+.secHead .grow{flex:1}.toggle{border:0;background:none;font-size:18px;color:#75665f}.label{font-size:11px;color:#887b75;margin:4px 2px 2px}
+.field{height:36px;border:1px solid #e3d7d1;border-radius:8px;background:#fff;padding:0 7px;display:flex;align-items:center}
+.field input,.field select{width:100%;min-width:0;border:0;outline:0;background:transparent;font-size:13px}
+.cat{display:grid;grid-template-columns:2fr .2fr 2fr .2fr 4fr}.activityline{display:grid;grid-template-columns:3fr .2fr 3fr .2fr 5fr;align-items:end}
+.locfield{display:grid;grid-template-columns:1fr 34px;gap:4px}.mapbtn{height:36px;border:1px solid #795747;border-radius:8px;background:#fff;font-size:18px}
+.memo{width:100%;height:55px;border:1px solid #e3d7d1;border-radius:8px;padding:7px}
+.saleTop{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.saleTop .sys{display:flex;align-items:center;gap:4px;margin-left:auto;font-size:12px}
+.smallplus{width:30px;height:30px;border:1px solid #795747;background:#fff;border-radius:7px;color:#795747;font-size:20px}
+.addsale{height:30px;border:1px solid #795747;background:#fff;border-radius:7px;color:#795747;font-weight:700;font-size:12px}
+.saleRows{margin-top:2px}.saleRow{display:grid;grid-template-columns:2.5fr .1fr 2.5fr .1fr 2.5fr .1fr 2.5fr 28px;align-items:center;margin-top:3px}
+.saleRow .field{height:34px;padding:0 5px}.saleRow button.del{border:0;background:none;color:#b84a42;font-size:11px;padding:0}
+.related{display:flex;align-items:center}.prefix{font-size:12px;padding-right:3px;white-space:nowrap}.bankwrap{display:grid;grid-template-columns:1fr 27px;gap:3px;width:100%}
+.pickupBody{padding-top:2px}.pickupGrid{display:grid;grid-template-columns:1fr 5px 1fr;gap:0}.pickupItem{margin-bottom:4px}
+.attachBtns{display:grid;grid-template-columns:1fr 5px 1fr 5px 1fr;align-items:center}.ab{height:36px;border:1px solid #795747;border-radius:8px;background:#fff;color:#604437;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.thumbs{display:flex;gap:5px;overflow-x:auto;margin-top:5px}.thumb{width:50px;height:50px;object-fit:cover;border-radius:7px;border:1px solid #ddd;flex:0 0 auto}
+.preview{display:none;margin-top:5px}.preview img{width:100%;max-height:65vh;object-fit:contain;background:#f3efec;border-radius:8px}.photoActions{display:flex;justify-content:space-between;align-items:center;margin-top:4px;font-size:12px}
+.red{border:1px solid #c95a50;background:#fff;color:#b9443b;border-radius:7px;padding:6px 8px}.muted{font-size:11px;color:#887b75}
+.homeCard{background:#fff;border:1px solid #e7ddd7;border-radius:12px;margin:7px 0;padding:9px}.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.tile{border:1px solid #e5d8d2;background:#fff;border-radius:9px;padding:8px 2px}
+.hidden{display:none!important}.wide{width:100%;height:42px;margin-top:7px}.managerRow{display:grid;grid-template-columns:1fr 31px 31px;gap:4px;margin:4px 0}.modal{display:none;position:fixed;inset:0;background:#0007;z-index:30;padding:18px;overflow:auto}.modalBox{max-width:500px;margin:25px auto;background:#faf7f4;border-radius:13px;padding:10px}
+.detailLine{padding:7px 2px;border-bottom:1px solid #eee3dd}.detailLine:last-child{border:0}.detailLabel{font-size:11px;color:#887b75}.detailValue{font-size:14px;margin-top:2px;word-break:break-word}.subtabs{display:grid;gap:4px;margin:6px 0}.subtabs.two{grid-template-columns:repeat(2,1fr)}.subtabs.four{grid-template-columns:repeat(4,1fr)}.subtab{height:34px;border:1px solid #e1d4ce;border-radius:8px;background:#fff}.subtab.active{background:#795747;color:#fff}.recordBtn{width:100%;text-align:left;border:0;background:#fff;padding:9px;border-radius:10px;margin:4px 0;border:1px solid #e7ddd7}.recordBtn b{display:block}.detailPhoto{width:70px;height:70px;object-fit:cover;border-radius:8px;margin:4px}.detailPhotos{display:flex;gap:4px;overflow:auto}.editNote{font-size:11px;color:#887b75;margin:5px 0}
+/* V10 iPhone 15 portrait layout */
+.app{width:100%;max-width:430px;padding:10px 12px}
+.card{padding:8px;margin:6px 0}
+.activityline{
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) 4px minmax(0,.9fr) 4px minmax(0,1.55fr);
+  align-items:end
+}
+.activityline>div{min-width:0}
+.locfield{grid-template-columns:minmax(0,1fr) 38px;gap:4px}
+.mapbtn{width:38px;padding:0}
+.saleTop{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:6px;row-gap:5px;align-items:center}
+.saleTop>.secHead{min-width:0}
+.saleTop .sys{margin:0;justify-self:end;min-width:0;white-space:nowrap}
+.saleTop .sys .field{width:102px!important}
+.saleTop>.addsale{grid-column:1/-1;justify-self:start}
+.saleRows{width:100%;overflow:hidden}
+.saleRow{
+  display:grid;
+  grid-template-columns:minmax(0,2.7fr) 3px minmax(0,1.8fr) 3px minmax(0,1.55fr) 3px minmax(0,3.2fr) 34px;
+  width:100%;margin-top:3px;align-items:center
+}
+.saleRow .field{height:34px;min-width:0;padding:0 4px}
+.saleRow input,.saleRow select{font-size:12px;min-width:0}
+.saleRow button.del{width:34px;font-size:10px}
+.bankwrap{grid-template-columns:minmax(0,1fr) 25px;gap:2px}
+.bankwrap .smallplus{width:25px;height:30px;font-size:17px}
+@media(max-width:390px){
+ .app{padding-left:9px;padding-right:9px}
+ .saleRow{grid-template-columns:minmax(0,2.55fr) 2px minmax(0,1.65fr) 2px minmax(0,1.45fr) 2px minmax(0,3.05fr) 30px}
+ .saleRow button.del{width:30px;font-size:9px}
+ .saleTop .sys .field{width:94px!important}
+}
+
+
+/* V12 compact iPhone 15 tuning */
+.app{width:100%;max-width:430px;padding:8px 10px}
+.top{height:44px}
+.top h1{font-size:20px}
+.field{height:32px;padding:0 6px;border-radius:7px}
+.field input,.field select{font-size:12px;line-height:1.1}
+.btn{padding:7px 9px}
+.label{font-size:11px;margin:3px 2px 1px}
+.card{padding:7px;margin:5px 0;border-radius:11px}
+.secHead{min-height:26px;font-size:15px}
+.cat{grid-template-columns:2.35fr .15fr 2.8fr .15fr 3.55fr}
+.cat .field{height:38px}
+.cat select{font-size:16px;font-weight:700}
+#subbox{min-width:0}
+#subbox select{font-size:15px}
+#concertUI .card:first-child .secHead{display:flex;align-items:center}
+#concertUI .card:first-child .secHead:after{
+ content:"活動名稱";
+ font-size:12px;font-weight:600;color:#887b75;margin-left:4px
+}
+#concertUI #eventName{font-size:13px}
+.activityline{
+ display:grid;
+ grid-template-columns:minmax(0,1.4fr) 3px minmax(0,1.05fr) 3px minmax(0,1.55fr);
+ align-items:end
+}
+.activityline .field{height:32px}
+.locfield{grid-template-columns:minmax(0,1fr) 32px;gap:3px}
+.mapbtn{width:32px;height:32px;font-size:16px}
+.saleTop{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:5px;row-gap:3px}
+.saleTop .sys{font-size:11px}
+.saleTop .sys .field{width:54px!important;height:32px}
+.saleTop .sys .field select{font-size:12px}
+.smallplus{width:28px;height:28px;font-size:18px}
+.addsale{height:29px;font-size:11px}
+.saleRow{
+ grid-template-columns:minmax(0,2.15fr) 2px minmax(0,1.55fr) 2px minmax(0,1.5fr) 2px minmax(0,3.35fr) 30px;
+ margin-top:2px
+}
+.saleRow .field{height:31px;padding:0 4px}
+.saleRow input,.saleRow select{font-size:11px}
+.saleRow button.del{width:30px;font-size:9px}
+.bankwrap{grid-template-columns:minmax(0,1fr) 24px;gap:2px}
+.bankwrap .smallplus{width:24px;height:28px;font-size:16px}
+.attachBtns .ab{height:33px;font-size:11px}
+.thumb{width:46px;height:46px}
+@media(max-width:390px){
+ .cat{grid-template-columns:2.4fr .12fr 2.9fr .12fr 3.46fr}
+ .cat select{font-size:15px}
+ .saleTop .sys .field{width:50px!important}
+ .saleRow{
+   grid-template-columns:minmax(0,2fr) 2px minmax(0,1.45fr) 2px minmax(0,1.4fr) 2px minmax(0,3.45fr) 28px
+ }
+}
+
+
+/* V13 - content-width fields + one pickup item per full row */
+.activityline{
+  display:grid!important;
+  grid-template-columns:78px 68px minmax(0,1fr)!important;
+  gap:4px!important;
+  align-items:end
+}
+.activityline>i{display:none!important}
+.activityline>div{min-width:0}
+.activityline .field{width:100%;height:31px}
+.locfield{grid-template-columns:minmax(0,1fr) 32px!important;gap:3px}
+.saleRow{
+  display:grid!important;
+  grid-template-columns:62px 54px 52px minmax(0,1fr) 29px!important;
+  gap:3px!important;
+  width:100%;
+  align-items:center;
+  margin-top:2px
+}
+.saleRow>i{display:none!important}
+.saleRow .field{height:30px;min-width:0;padding:0 3px}
+.saleRow input,.saleRow select{font-size:11px}
+.saleRow button.del{width:29px;font-size:9px;padding:0}
+.pickupGrid{
+  display:block!important;
+  width:100%
+}
+.pickupItem{
+  display:block!important;
+  width:100%!important;
+  margin:0 0 5px 0!important
+}
+.pickupItem .label{
+  display:block!important;
+  width:100%!important;
+  white-space:normal!important;
+  writing-mode:horizontal-tb!important;
+  margin:0 2px 2px!important;
+  font-size:11px
+}
+.pickupItem .field{width:100%!important;height:32px}
+#pickupBody>.label{display:block;width:100%;margin:2px 2px}
+#pickupMethod{width:100%}
+@media(max-width:390px){
+ .activityline{grid-template-columns:74px 64px minmax(0,1fr)!important}
+ .saleRow{grid-template-columns:59px 51px 49px minmax(0,1fr) 27px!important;gap:2px!important}
+ .saleRow button.del{width:27px}
+}
+
+
+/* V14 - 日期時間合併緊湊版 */
+.activityline{
+  display:grid!important;
+  grid-template-columns:132px minmax(0,1fr)!important;
+  gap:4px!important;
+  align-items:end
+}
+.activityline>i{display:none!important}
+.activityline>div:nth-of-type(1),
+.activityline>div:nth-of-type(2){display:contents}
+.activityline>div:nth-of-type(1) .label{grid-column:1}
+.activityline>div:nth-of-type(2) .label{display:none}
+.activityline>div:nth-of-type(1) .field{grid-column:1;width:62px}
+.activityline>div:nth-of-type(2) .field{
+  grid-column:1;width:66px;margin-left:66px
+}
+.activityline>div:nth-of-type(3){grid-column:2;min-width:0}
+.activityline>div:nth-of-type(3) .label{margin-left:0}
+.locfield{grid-template-columns:minmax(0,1fr) 32px!important;gap:3px}
+.saleRow{
+  display:grid!important;
+  grid-template-columns:58px 52px 50px minmax(0,1fr) 28px!important;
+  gap:2px!important;
+  align-items:center
+}
+.saleRow>i{display:none!important}
+.saleRow .field{padding:0 2px;height:30px}
+.saleRow input,.saleRow select{font-size:11px}
+.saleRow button.del{width:28px;font-size:9px}
+@media(max-width:390px){
+ .activityline{grid-template-columns:126px minmax(0,1fr)!important}
+ .activityline>div:nth-of-type(1) .field{width:59px}
+ .activityline>div:nth-of-type(2) .field{width:63px;margin-left:63px}
+ .saleRow{grid-template-columns:56px 50px 48px minmax(0,1fr) 27px!important}
+}
+
+
+/* V15 */
+#concertUI .card:first-child .secHead:after{content:""!important;display:none!important}
+#concertUI .activityline .label{display:none!important}
+#concertUI .activityline{margin-top:4px!important}
+.saleTop .sys{font-size:0!important}
+.saleTop .sys .field{width:126px!important;height:32px}
+.saleTop .sys .field select{font-size:12px!important}
+.saleRow{display:grid!important;grid-template-columns:116px 52px minmax(0,1fr) 28px!important;gap:3px!important}
+.saleRow>i{display:none!important}
+.saleDateTime{height:32px!important}
+.saleDateTime button{width:100%;height:100%;border:0;background:transparent;text-align:left;padding:0 5px;font-size:11px;color:#392f2a}
+@media(max-width:390px){.saleTop .sys .field{width:116px!important}.saleRow{grid-template-columns:108px 50px minmax(0,1fr) 27px!important;gap:2px!important}}
+
+/* V16 - unified date/time row 40/55/5; map icon no frame/background */
+.activityline{display:grid!important;grid-template-columns:minmax(0,40fr) minmax(0,55fr) minmax(18px,5fr)!important;gap:4px!important;align-items:center}
+.activityline>i{display:none!important}
+.activityline .dtCombined{grid-column:1;min-width:0}
+.activityline .locationCombined{grid-column:2 / 4;min-width:0}
+.locfield{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(18px,5%)!important;gap:4px!important;align-items:center}
+.mapbtn{width:100%!important;height:32px!important;border:0!important;border-radius:0!important;background:transparent!important;padding:0!important;font-size:18px!important}
+.dateTimeBtn{width:100%;height:100%;border:0;background:transparent;text-align:left;padding:0 5px;font-size:12px;color:#392f2a;white-space:nowrap}
+#genericUI>.activityline{margin-top:4px}
+@media(max-width:390px){.activityline{grid-template-columns:minmax(0,40fr) minmax(0,55fr) minmax(18px,5fr)!important}}
+
+/* V17 - 售票日期時間去外框底色；會員/其它直接輸入 */
+.saleDateTime{border:0!important;background:transparent!important;padding:0!important}
+.saleDateTime button{padding:0!important;background:transparent!important}
+
+/* V18 - 活動/面交/工作：日期時間與地點 2:3，日期時間無框放大；售票資訊不變 */
+#concertUI .activityline,
+#genericUI .activityline{
+  display:grid!important;
+  grid-template-columns:minmax(0,2fr) minmax(0,3fr)!important;
+  gap:3px!important;
+  align-items:center!important;
+}
+#concertUI .activityline .dtCombined,
+#genericUI .activityline .dtCombined{
+  grid-column:1!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+  height:34px!important;
+}
+#concertUI .activityline .dateTimeBtn,
+#genericUI .activityline .dateTimeBtn{
+  border:0!important;
+  background:transparent!important;
+  padding:0 3px!important;
+  font-size:16px!important;
+  font-weight:600!important;
+  line-height:34px!important;
+}
+#concertUI .activityline .locationCombined,
+#genericUI .activityline .locationCombined{
+  grid-column:2!important;
+  min-width:0!important;
+}
+#concertUI .activityline .locfield,
+#genericUI .activityline .locfield{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 28px!important;
+  gap:1px!important;
+  align-items:center!important;
+}
+#concertUI .activityline .mapbtn,
+#genericUI .activityline .mapbtn{
+  width:28px!important;
+  min-width:28px!important;
+  height:32px!important;
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+}
+
+</style></head><body><div class="app">
+<section id="home" class="page on"><div class="top"><span>☰</span><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
+<b>🔔 今日／近期提醒</b><div id="reminders"></div>
+<div class="homeCard"><b>全部資料</b><div class="tiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('面交')">👥<br>面交</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div></section>
+
+<section id="category" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1 id="catTitle">全部資料</h1><span></span></div><div id="catTabs" class="tiles"></div><div id="catList"></div></section>
+
+<section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><h1>紀錄明細</h1><button class="btn" onclick="editCurrent()">修改</button></div><div id="detailBody"></div><button class="red wide" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
+
+<section id="form" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1>新增</h1><button class="btn" onclick="save()">儲存</button></div>
+<div class="label">分類</div><div class="cat"><div class="field"><select id="main" onchange="ui()"><option>工作</option><option>面交</option><option>活動</option></select></div><i></i><div id="subbox" class="field"><select id="sub" onchange="ui()"></select></div><i></i><div id="third" class="field"><input id="vendor" placeholder="廠商名稱"></div></div>
+
+<div id="eventDateBox" class="hidden"></div><input id="eventTime" type="time" class="hidden">
+<div id="concertUI" class="hidden">
+<div class="card"><div class="secHead" onclick="toggleSec('activityBody','activityArrow')">🗓 <span class="grow">活動資訊</span><button class="toggle" id="activityArrow">⌄</button></div>
+<div id="activityBody">
+<div class="field"><input id="eventName" placeholder="輸入活動名稱"></div>
+<div class="activityline">
+<div class="field dtCombined"><button type="button" class="dateTimeBtn" id="eventDateTimeBtn" onclick="openMainDT('event')">日期時間</button></div>
+<div class="locationCombined"><div class="locfield"><div class="field"><input id="eventLocation" placeholder="地點"></div><button class="mapbtn" onclick="event.stopPropagation();openMap()">📍</button></div></div>
+</div></div></div>
+
+<div class="card"><div class="saleTop"><div class="secHead" onclick="toggleSec('saleBody','saleArrow')">🔔 <span>售票資訊</span><button class="toggle" id="saleArrow">⌄</button></div>
+<div class="sys"><div class="field" style="width:105px"><select id="ticketSystem" onchange="systemChanged()"></select></div><button class="smallplus" onclick="openManager()">＋</button></div>
+<button class="addsale" onclick="addSale()">＋ 新增售票資訊</button></div><div id="saleBody"><div id="saleRows" class="saleRows"></div></div></div>
+
+<div class="card"><div class="secHead" onclick="toggleSec('pickupBody','pickupArrow')">🎟 <span class="grow">取票資訊</span><button class="toggle" id="pickupArrow">›</button></div>
+<div id="pickupBody" class="pickupBody hidden"></div></div>
+</div>
+
+<div id="genericDateBox" class="hidden"></div><input id="time" type="time" class="hidden">
+<div id="genericUI">
+<div class="activityline"><div class="field dtCombined"><button type="button" class="dateTimeBtn" id="genericDateTimeBtn" onclick="openMainDT('generic')">日期時間</button></div><div class="locationCombined"><div class="locfield"><div class="field"><input id="location"></div><button class="mapbtn" onclick="openGenericMap()">📍</button></div></div></div>
+<div class="label">標題／內容</div><div class="field"><input id="title"></div><div class="label">備註</div><textarea id="memo" class="memo"></textarea>
+</div>
+
+<div class="card"><div class="secHead">🖼 <span class="grow">活動照片（附件）</span></div>
+<div class="attachBtns"><label class="ab">📷 拍照<input id="camera" type="file" accept="image/*" capture="environment" multiple hidden></label><i></i><label class="ab">📁 選擇檔案<input id="files" type="file" accept="image/*" multiple hidden></label><i></i><span class="muted" id="count">0 張</span></div>
+<div class="photoActions"><label><input id="del30" type="checkbox"> 30天後刪除</label><span class="muted">點縮圖展開／收起</span></div><div id="thumbs" class="thumbs"></div>
+<div id="preview" class="preview"><img id="previewImg"><div class="photoActions"><span></span><button class="red" onclick="deleteCurrentPhoto()">🗑 刪除照片</button></div></div></div>
+<button class="btn wide" onclick="save()">儲存</button></section></div>
+
+
+<div id="mainDTModal" class="modal"><div class="modalBox" style="margin-top:25vh">
+<div class="secHead"><span class="grow">日期時間</span><button class="toggle" onclick="closeMainDT()">×</button></div>
+<div class="label">日期</div><div class="field"><input id="mainPickDate" type="date"></div>
+<div class="label">時間</div><div class="field"><input id="mainPickTime" type="time"></div>
+<button class="btn wide" onclick="confirmMainDT()">完成</button></div></div>
+<div id="saleDTModal" class="modal"><div class="modalBox" style="margin-top:25vh">
+<div class="secHead"><span class="grow">售票日期時間</span><button class="toggle" onclick="closeSaleDT()">×</button></div>
+<div class="label">日期</div><div class="field"><input id="salePickDate" type="date"></div>
+<div class="label">時間</div><div class="field"><input id="salePickTime" type="time"></div>
+<button class="btn wide" onclick="confirmSaleDT()">完成</button></div></div>
+<div id="manager" class="modal"><div class="modalBox"><div class="top"><button class="back" onclick="closeManager()">‹</button><h1>售票系統管理</h1><button class="btn" onclick="saveManager()">儲存</button></div>
+<div class="label">公司</div><div class="field"><select id="manageSystem" onchange="loadManager()"></select></div>
+<div class="label">公司名稱</div><div style="display:grid;grid-template-columns:1fr 6px auto;align-items:center"><div class="field"><input id="manageName"></div><i></i><button class="red" onclick="deleteManagedSystem()">刪除系統</button></div>
+<div class="secHead" style="margin-top:7px"><span class="grow">取票所需資料</span><button class="smallplus" onclick="addRequired()">＋</button></div><div id="requiredList"></div>
+<div class="secHead" style="margin-top:7px"><span class="grow">取票方式</span><button class="smallplus" onclick="addMethod()">＋</button></div><div id="methodList"></div>
+<div class="label">預設取票方式</div><div class="field"><select id="defaultMethod"></select></div>
+<button class="btn wide" onclick="newSystem()">＋ 新增售票系統</button></div></div>
+
+<script>
+
+function md(v){
+ if(!v)return "";
+ let p=v.split("-");
+ return p.length===3?(Number(p[1])+"/"+Number(p[2])):v;
+}
+let mainDTTarget="";
+function dtText(date,time){return [md(date),time].filter(Boolean).join(" ")||"日期時間"}
+function updateMainDTButtons(){let g=document.querySelector("#genericDateBox input"),e=document.querySelector("#eventDateBox input");if($("#genericDateTimeBtn"))$("#genericDateTimeBtn").textContent=dtText(g?.value||"",$("#time")?.value||"");if($("#eventDateTimeBtn"))$("#eventDateTimeBtn").textContent=dtText(e?.value||"",$("#eventTime")?.value||"")}
+function openMainDT(target){mainDTTarget=target;let isEvent=target==="event";let box=$(isEvent?"#eventDateBox":"#genericDateBox");$("#mainPickDate").value=box?.querySelector("input")?.value||"";$("#mainPickTime").value=$(isEvent?"#eventTime":"#time")?.value||"";$("#mainDTModal").style.display="block"}
+function closeMainDT(){$("#mainDTModal").style.display="none";mainDTTarget=""}
+function confirmMainDT(){let isEvent=mainDTTarget==="event",box=$(isEvent?"#eventDateBox":"#genericDateBox"),date=$("#mainPickDate").value,time=$("#mainPickTime").value;if(box)box.innerHTML=dateInputHTML(date,`this.dataset.sync=this.value`,isEvent?"活動日期":"日期");$(isEvent?"#eventTime":"#time").value=time;updateMainDTButtons();closeMainDT()}
+function dateInputHTML(value,onchangeCode,label){
+ let v=value||"";
+ return `<div class="shortDateWrap" style="position:relative;width:100%;height:100%">
+   <input type="date" value="${v}" aria-label="${label||'日期'}" onchange="${onchangeCode};this.nextElementSibling.textContent=md(this.value)" style="position:absolute;inset:0;opacity:0;width:100%;height:100%">
+   <div style="display:flex;align-items:center;height:100%;font-size:12px;pointer-events:none">${md(v)||"月/日"}</div>
+ </div>`;
+}
+
+const $=s=>document.querySelector(s), DATAKEY="secretaryV8", SYSKEY="secretaryV8Systems";
+let records=JSON.parse(localStorage.getItem(DATAKEY)||"[]");
+let systems=JSON.parse(localStorage.getItem(SYSKEY)||'null')||[
+{name:"拓元",required:["訂單編號","取票序號"],methods:["7-11","全家","現場取票","寄送"],defaultMethod:"7-11"},
+{name:"KKTIX",required:["訂單編號"],methods:["全家","現場取票","電子票券"],defaultMethod:"全家"},
+{name:"ibon",required:["取票序號"],methods:["7-11","現場取票"],defaultMethod:"7-11"},
+{name:"年代",required:["訂單編號"],methods:["7-11","全家","寄送"],defaultMethod:"7-11"}];
+let saleDTIndex=-1,sales=[],photos=[],previewIndex=-1,currentCategory='工作',currentSub='',currentRecordId=null,editingId=null;
+function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("#"+id).classList.add("on");scrollTo(0,0)}
+function setSubs(){let m=$("#main").value,s=$("#sub"),old=s.value;s.innerHTML=m==="工作"?'<option>下單</option><option>記事</option>':m==="活動"?'<option>演唱會</option><option>展覽</option><option>電影</option><option>其它</option>':"";if([...s.options].some(o=>o.value===old))s.value=old}
+function ui(){setSubs();let m=$("#main").value,s=$("#sub").value,c=m==="活動"&&s==="演唱會",order=m==="工作"&&s==="下單";$("#subbox").style.visibility=m==="面交"?"hidden":"visible";$("#third").style.visibility=order?"visible":"hidden";$("#concertUI").classList.toggle("hidden",!c);$("#genericUI").classList.toggle("hidden",c);if(c){renderSystems();renderSales();renderPickup()}}
+function toggleSec(id,arrow){let e=$("#"+id),a=$("#"+arrow),hide=!e.classList.contains("hidden");e.classList.toggle("hidden",hide);a.textContent=hide?"›":"⌄"}
+function renderSystems(){let s=$("#ticketSystem"),v=s.value;s.innerHTML=systems.map(x=>`<option>${x.name}</option>`).join("");if(systems.some(x=>x.name===v))s.value=v;renderPickup()}
+function saleDTText(x){return [md(x.date),x.time].filter(Boolean).join(" ")||"日期時間"}
+function openSaleDT(i){saleDTIndex=i;$("#salePickDate").value=sales[i].date||"";$("#salePickTime").value=sales[i].time||"";$("#saleDTModal").style.display="block"}
+function closeSaleDT(){$("#saleDTModal").style.display="none";saleDTIndex=-1}
+function confirmSaleDT(){if(saleDTIndex<0)return;sales[saleDTIndex].date=$("#salePickDate").value;sales[saleDTIndex].time=$("#salePickTime").value;closeSaleDT();renderSales()}
+function addSale(){sales.push({date:"",time:"",type:"公售",related:""});renderSales()}
+function renderSales(){let h=sales.map((x,i)=>`<div class="saleRow">
+<div class="field saleDateTime"><button type="button" onclick="openSaleDT(${i})">${saleDTText(x)}</button></div><i></i>
+<div class="field"><select onchange="sales[${i}].type=this.value;sales[${i}].related='';renderSales()"><option ${x.type==="公售"?"selected":""}>公售</option><option ${x.type==="卡友"?"selected":""}>卡友</option><option ${x.type==="會員"?"selected":""}>會員</option><option ${x.type==="其它"?"selected":""}>其它</option></select></div><i></i>
+<div>${relatedHTML(x,i)}</div><button class="del" onclick="sales.splice(${i},1);renderSales()">刪除</button></div>`).join("");$("#saleRows").innerHTML=h||'<div class="muted" style="padding:4px">尚未新增售票資訊</div>'}
+function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員"||x.type==="其它")return `<div class="field related"><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
+function addBank(i){let b=prompt("輸入銀行名稱");if(b){sales[i].related=b;renderSales()}}
+function currentSystem(){return systems.find(x=>x.name===$("#ticketSystem").value)||systems[0]}
+function systemChanged(){renderPickup()}
+function renderPickup(){let box=$("#pickupBody");if(!box||!systems.length)return;let s=currentSystem();let vals={};box.querySelectorAll("[data-key]").forEach(e=>vals[e.dataset.key]=e.value);let fields=s.required.map((r,j)=>`<div class="pickupItem"><div class="label">${r}</div><div class="field"><input data-key="${r}" value="${vals[r]||""}"></div></div>`).join("");box.innerHTML=`<div class="pickupGrid">${fields}</div><div class="label">取票方式</div><div class="field"><select id="pickupMethod">${s.methods.map(m=>`<option ${m===s.defaultMethod?"selected":""}>${m}</option>`).join("")}</select></div>`}
+function openManager(){renderManageSelect();$("#manager").style.display="block";loadManager()}
+function closeManager(){$("#manager").style.display="none"}
+function renderManageSelect(){let s=$("#manageSystem");s.innerHTML=systems.map((x,i)=>`<option value="${i}">${x.name}</option>`).join("")}
+function loadManager(){let x=systems[+$("#manageSystem").value||0];$("#manageName").value=x.name;$("#requiredList").innerHTML=x.required.map((v,i)=>mgrRow("required",v,i)).join("");$("#methodList").innerHTML=x.methods.map((v,i)=>mgrRow("method",v,i)).join("");renderDefault(x)}
+function mgrRow(t,v,i){return `<div class="managerRow"><div class="field"><input value="${v}" data-${t}="${i}"></div><button class="smallplus" onclick="${t==="required"?"addRequired()":"addMethod()"}">＋</button><button class="smallplus" onclick="removeMgr('${t}',${i})">−</button></div>`}
+function renderDefault(x){$("#defaultMethod").innerHTML=x.methods.map(m=>`<option ${m===x.defaultMethod?"selected":""}>${m}</option>`).join("")}
+function collectManager(){let idx=+$("#manageSystem").value||0,x=systems[idx];x.name=$("#manageName").value||x.name;x.required=[...document.querySelectorAll("[data-required]")].map(e=>e.value).filter(Boolean);x.methods=[...document.querySelectorAll("[data-method]")].map(e=>e.value).filter(Boolean);x.defaultMethod=$("#defaultMethod").value||x.methods[0]||"";return x}
+function addRequired(){let x=collectManager();x.required.push("新欄位");loadManager()}
+function addMethod(){let x=collectManager();x.methods.push("新方式");loadManager()}
+function removeMgr(t,i){let x=collectManager();(t==="required"?x.required:x.methods).splice(i,1);if(!x.methods.includes(x.defaultMethod))x.defaultMethod=x.methods[0]||"";loadManager()}
+function newSystem(){systems.push({name:"新售票系統",required:["取票資料"],methods:["7-11"],defaultMethod:"7-11"});renderManageSelect();$("#manageSystem").value=systems.length-1;loadManager()}
+function saveManager(){collectManager();localStorage.setItem(SYSKEY,JSON.stringify(systems));renderSystems();closeManager()}
+function deleteManagedSystem(){if(systems.length<=1){alert("至少需要保留一個售票系統");return}let idx=+$("#manageSystem").value||0,name=systems[idx].name;if(!confirm("確定刪除「"+name+"」售票系統？"))return;systems.splice(idx,1);localStorage.setItem(SYSKEY,JSON.stringify(systems));renderManageSelect();$("#manageSystem").value=0;loadManager();renderSystems()}
+function openMap(){let q=$("#eventLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+function openGenericMap(){let q=$("#location").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+function pickFiles(fs){[...fs].slice(0,10-photos.length).forEach(f=>{let r=new FileReader();r.onload=()=>{photos.push({data:r.result,at:Date.now()});renderPhotos()};r.readAsDataURL(f)})}
+$("#camera").onchange=e=>pickFiles(e.target.files);$("#files").onchange=e=>pickFiles(e.target.files);
+function renderPhotos(){$("#count").textContent=photos.length+" 張";$("#thumbs").innerHTML=photos.map((p,i)=>`<img class="thumb" src="${p.data}" onclick="togglePreview(${i})">`).join("");if(previewIndex>=photos.length){previewIndex=-1;$("#preview").style.display="none"}}
+function togglePreview(i){if(previewIndex===i){previewIndex=-1;$("#preview").style.display="none"}else{previewIndex=i;$("#previewImg").src=photos[i].data;$("#preview").style.display="block"}}
+function deleteCurrentPhoto(){if(previewIndex<0)return;photos.splice(previewIndex,1);previewIndex=-1;$("#preview").style.display="none";renderPhotos()}
+function openAdd(){sales=[{date:"",time:"",type:"公售",related:""}];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["location","title","memo","vendor","eventName","eventLocation"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#del30").checked=false;ui();updateMainDTButtons();updateMainDTButtons();renderPhotos();show("form")}
+function cleanup(){let now=Date.now(),changed=false;records.forEach(r=>{if(r.delete30&&r.photos){let n=r.photos.filter(p=>now-p.at<2592000000);if(n.length!==r.photos.length){r.photos=n;changed=true}}});if(changed)localStorage.setItem(DATAKEY,JSON.stringify(records))}
+function save(){let m=$("#main").value,s=$("#sub").value,c=m==="活動"&&s==="演唱會";let rec={id:editingId||Date.now(),main:m,sub:m==="面交"?"":s,vendor:$("#vendor").value,photos,delete30:$("#del30").checked};if(c){let pickup={};$("#pickupBody").querySelectorAll("[data-key]").forEach(e=>pickup[e.dataset.key]=e.value);Object.assign(rec,{title:$("#eventName").value,date:$("#eventDateBox input").value,time:$("#eventTime").value,location:$("#eventLocation").value,ticketSystem:$("#ticketSystem").value,sales:JSON.parse(JSON.stringify(sales)),pickup,pickupMethod:$("#pickupMethod")?.value||""})}else Object.assign(rec,{title:$("#title").value,date:$("#genericDateBox input").value,time:$("#time").value,location:$("#location").value,memo:$("#memo").value});if(editingId){let idx=records.findIndex(x=>x.id===editingId);if(idx>=0)records[idx]=rec}else records.unshift(rec);editingId=null;localStorage.setItem(DATAKEY,JSON.stringify(records));renderHome();show("home")}
+function renderHome(){cleanup();let items=[];records.forEach(r=>{if(r.sales?.length)r.sales.forEach(s=>items.push({title:r.title||"活動售票",date:s.date,time:s.time,sub:s.type}));else items.push({title:r.title||r.vendor||r.main,date:r.date,time:r.time,sub:r.sub})});$("#reminders").innerHTML=items.length?items.slice(0,12).map(x=>`<div class="homeCard"><b>${x.title}</b><div class="muted">${[x.date,x.time,x.sub].filter(Boolean).join(" · ")}</div></div>`).join(""):'<div class="homeCard muted">目前沒有需要處理的提醒事項</div>'}
+
+function openCategory(cat,sub){currentCategory=cat;currentSub=sub||"";$("#catTitle").textContent=cat;renderCategory();show("category")}
+function renderCategory(){let tabs=$("#catTabs");if(currentCategory==="工作"){let ss=["下單","記事"];if(!currentSub)currentSub="下單";tabs.className="subtabs two";tabs.innerHTML=ss.map(x=>`<button class="subtab ${currentSub===x?"active":""}" onclick="currentSub='${x}';renderCategory()">${x}</button>`).join("")}else if(currentCategory==="活動"){let ss=["演唱會","展覽","電影","其它"];if(!currentSub)currentSub="演唱會";tabs.className="subtabs four";tabs.innerHTML=ss.map(x=>`<button class="subtab ${currentSub===x?"active":""}" onclick="currentSub='${x}';renderCategory()">${x}</button>`).join("")}else{currentSub="";tabs.innerHTML=""}
+let arr=records.filter(r=>r.main===currentCategory&&(!currentSub||r.sub===currentSub));$("#catList").innerHTML=arr.length?arr.map(r=>`<button class="recordBtn" onclick="openDetail(${r.id})"><b>${esc(r.title||r.vendor||"未命名")}</b><span class="muted">${[r.date,r.time,r.location].filter(Boolean).map(esc).join(" · ")}</span></button>`).join(""):'<div class="homeCard muted">目前沒有紀錄</div>'}
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function openDetail(id){currentRecordId=id;let r=records.find(x=>x.id===id);if(!r)return;let rows=[];let add=(k,v)=>{if(v)rows.push(`<div class="detailLine"><div class="detailLabel">${k}</div><div class="detailValue">${esc(v)}</div></div>`)};add("分類",[r.main,r.sub].filter(Boolean).join("／"));add("標題／活動名稱",r.title);add("廠商",r.vendor);add("日期",r.date);add("時間",r.time);add("地點",r.location);
+if(r.main==="活動"&&r.sub==="演唱會"){add("售票系統",r.ticketSystem);if(r.sales?.length)rows.push(`<div class="card"><b>售票資訊</b>${r.sales.map(s=>`<div class="detailLine"><div class="detailValue">${[s.date,s.time,s.type,s.related].filter(Boolean).map(esc).join(" ｜ ")}</div></div>`).join("")}</div>`);if(r.pickup&&Object.keys(r.pickup).length)rows.push(`<div class="card"><b>取票資訊</b>${Object.entries(r.pickup).map(([k,v])=>`<div class="detailLine"><span class="detailLabel">${esc(k)}</span><div class="detailValue">${esc(v)}</div></div>`).join("")}${r.pickupMethod?`<div class="detailLine"><span class="detailLabel">取票方式</span><div class="detailValue">${esc(r.pickupMethod)}</div></div>`:""}</div>`)}
+add("備註",r.memo);if(r.photos?.length)rows.push(`<div class="card"><b>活動照片</b><div class="detailPhotos">${r.photos.map(p=>`<img class="detailPhoto" src="${p.data}" onclick="this.style.width=this.style.width==='100%'?'70px':'100%';this.style.height=this.style.width==='100%'?'auto':'70px'">`).join("")}</div></div>`);$("#detailBody").innerHTML=`<div class="card">${rows.join("")}</div>`;show("detail")}
+function backToCategory(){openCategory(currentCategory,currentSub)}
+function deleteCurrentRecord(){if(!confirm("確定刪除這筆紀錄？"))return;records=records.filter(x=>x.id!==currentRecordId);localStorage.setItem(DATAKEY,JSON.stringify(records));renderHome();openCategory(currentCategory,currentSub)}
+function editCurrent(){let r=records.find(x=>x.id===currentRecordId);if(!r)return;editingId=r.id;$("#main").value=r.main;setSubs();if(r.sub)$("#sub").value=r.sub;ui();$("#vendor").value=r.vendor||"";photos=JSON.parse(JSON.stringify(r.photos||[]));$("#del30").checked=!!r.delete30;if(r.main==="活動"&&r.sub==="演唱會"){$("#eventName").value=r.title||"";$("#eventDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=r.time||"";$("#eventLocation").value=r.location||"";renderSystems();if(r.ticketSystem&&systems.some(x=>x.name===r.ticketSystem))$("#ticketSystem").value=r.ticketSystem;sales=JSON.parse(JSON.stringify(r.sales||[]));renderSales();renderPickup();setTimeout(()=>{if(r.pickup)$("#pickupBody").querySelectorAll("[data-key]").forEach(e=>e.value=r.pickup[e.dataset.key]||"");if($("#pickupMethod")&&r.pickupMethod)$("#pickupMethod").value=r.pickupMethod},0)}else{$("#genericDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");$("#time").value=r.time||"";$("#location").value=r.location||"";$("#title").value=r.title||"";$("#memo").value=r.memo||""}renderPhotos();show("form")}
+
+renderHome();ui();
+</script></body></html>
