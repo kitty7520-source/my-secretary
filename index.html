@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V30</title>
+<title>我的小秘書 V32</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -494,26 +494,11 @@
 .detailTopNav{display:flex;align-items:center;justify-content:center;gap:4px}
 .detailNavBtn{width:30px;height:30px;border:0;background:transparent;color:#795747;font-size:24px;font-weight:800;padding:0;line-height:1}
 .detailNavBtn:disabled{opacity:.25}
-/* V28 交易模板 */
-#tradeUI .tradeTypeRow{display:flex!important;align-items:center;gap:18px;min-height:34px;margin:0 0 5px}
-#tradeUI .tradeTypeRow label{font-size:14px;white-space:nowrap}
-.tradeTitleRow{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:4px;align-items:end}
-.tradeTitleRow .tradeAddBtn{width:34px;height:32px;border:1px solid #795747;border-radius:8px;background:#fff;color:#795747;font-size:20px}
-.tradeItems:empty{display:none}
-/* V29 活動－展覽／電影／其它：日期與時間同時使用 generic 日期時間選擇器 */
-/* V30 活動－展覽／電影／其它：日期、時間同時顯示 */
-.activityOtherDT{display:grid;grid-template-columns:1.15fr .9fr 1.7fr;gap:4px;align-items:end}
-.activityOtherDT>div{min-width:0}
-.activityOtherDT .field{height:32px;padding:0 4px}
-.activityOtherDT input{font-size:12px}
-.activityOtherDT .locfield{grid-template-columns:minmax(0,1fr) 28px!important;gap:0!important}
-.activityOtherDT .mapbtn{width:28px!important;border:0!important;background:transparent!important}
-/* V30 final template fixes */
-#activityOtherUI .activityOtherDT{display:grid!important;grid-template-columns:minmax(0,1.05fr) minmax(0,.8fr) minmax(0,1.65fr)!important;gap:4px!important;align-items:end!important}
+/* V31 final fixes */
+.activityOtherDT{display:grid;grid-template-columns:1.05fr .8fr 1.65fr;gap:4px;align-items:end}
 #tradeUI .tradeTypeRow{display:flex!important;gap:18px!important;margin:2px 0 6px!important}
-#tradeUI .tradeTitleRow{display:grid!important;grid-template-columns:minmax(0,1fr) 34px!important;gap:4px!important;align-items:end!important}
-#tradeUI .tradeItems:empty{display:none!important}
-#orderScheduleRow{grid-template-columns:max-content minmax(0,1fr)!important;gap:6px!important}
+.tradeTitleRow{display:grid!important;grid-template-columns:minmax(0,1fr) 34px!important;gap:4px!important;align-items:end!important}
+.tradeItems:empty{display:none!important}
 </style></head><body><div class="app">
 <section id="home" class="page on"><div class="top"><span>☰</span><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div>
@@ -521,7 +506,7 @@
 
 <section id="category" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1 id="catTitle">全部資料</h1><span></span></div><div id="catTabs" class="tiles"></div><div id="catList"></div></section>
 
-<section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><div class="detailTopNav"><button id="prevRecordBtn" class="detailNavBtn" onclick="moveDetail(-1)">‹</button><h1>紀錄明細</h1><button id="nextRecordBtn" class="detailNavBtn" onclick="moveDetail(1)">›</button></div><button class="btn" onclick="editCurrent()">修改</button></div><div id="detailBody"></div><button class="red wide" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
+<section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><div class="detailTopNav"><button id="prevRecordBtn" class="detailNavBtn" onclick="moveDetail(-1)">‹</button><h1>紀錄明細</h1><button id="nextRecordBtn" class="detailNavBtn" onclick="moveDetail(1)">›</button></div><button type="button" class="btn" onclick="editCurrent()">修改</button></div><div id="detailBody"></div><button class="red wide" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
 
 <section id="form" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1>新增</h1><button class="btn" onclick="save()">儲存</button></div>
 <div class="label">分類</div><div class="cat"><div class="field"><select id="main" onchange="ui()"><option>工作</option><option>交易</option><option>活動</option></select></div><i></i><div id="subbox" class="field"><select id="sub" onchange="ui()"></select></div><i></i><div id="third" class="field"><input id="vendor" placeholder="廠商名稱"></div></div>
@@ -561,13 +546,13 @@
 
 
 <div id="activityOtherUI" class="hidden">
-  <div class="activityOtherDT">
-    <div><div class="label">日期</div><div class="field"><input id="otherActivityDate" type="date"></div></div>
-    <div><div class="label">時間</div><div class="field"><input id="otherActivityTime" type="time"></div></div>
-    <div><div class="label">地點</div><div class="locfield"><div class="field"><input id="otherActivityLocation" placeholder="地點"></div><button class="mapbtn" onclick="openOtherActivityMap()">📍</button></div></div>
-  </div>
-  <div class="label">標題／內容</div><div class="field"><input id="otherActivityTitle"></div>
-  <div class="label">備註</div><textarea id="otherActivityMemo" class="memo"></textarea>
+<div class="activityOtherDT">
+<div><div class="label">日期</div><div class="field"><input id="otherActivityDate" type="date"></div></div>
+<div><div class="label">時間</div><div class="field"><input id="otherActivityTime" type="time"></div></div>
+<div><div class="label">地點</div><div class="locfield"><div class="field"><input id="otherActivityLocation" placeholder="地點"></div><button class="mapbtn" onclick="openOtherActivityMap()">📍</button></div></div>
+</div>
+<div class="label">標題／內容</div><div class="field"><input id="otherActivityTitle"></div>
+<div class="label">備註</div><textarea id="otherActivityMemo" class="memo"></textarea>
 </div>
 <div id="tradeUI" class="hidden">
 <div class="label">交易／買賣換</div>
@@ -612,13 +597,7 @@ function md(v){
 }
 let mainDTTarget="";
 function dtText(date,time){return [md(date),time].filter(Boolean).join(" ")||"日期時間"}
-function updateMainDTButtons(){
- let g=document.querySelector("#genericDateBox input"),e=document.querySelector("#eventDateBox input"),t=document.querySelector("#tradeDateBox input");
- if($("#genericDateTimeBtn"))$("#genericDateTimeBtn").textContent=dtText(g?.value||"",$("#time")?.value||"");
- if($("#orderDateBtn"))$("#orderDateBtn").textContent=md(g?.value||"")||"日期";
- if($("#eventDateTimeBtn"))$("#eventDateTimeBtn").textContent=dtText(e?.value||"",$("#eventTime")?.value||"");
- if($("#tradeDateTimeBtn"))$("#tradeDateTimeBtn").textContent=dtText(t?.value||"",$("#tradeTime")?.value||"")
-}
+function updateMainDTButtons(){let g=document.querySelector("#genericDateBox input"),e=document.querySelector("#eventDateBox input"),t=document.querySelector("#tradeDateBox input");if($("#genericDateTimeBtn"))$("#genericDateTimeBtn").textContent=dtText(g?.value||"",$("#time")?.value||"");if($("#orderDateBtn"))$("#orderDateBtn").textContent=md(g?.value||"")||"日期";if($("#eventDateTimeBtn"))$("#eventDateTimeBtn").textContent=dtText(e?.value||"",$("#eventTime")?.value||"");if($("#tradeDateTimeBtn"))$("#tradeDateTimeBtn").textContent=dtText(t?.value||"",$("#tradeTime")?.value||"")}
 function openMainDT(target){mainDTTarget=target;let box=target==="event"?$("#eventDateBox"):target==="trade"?$("#tradeDateBox"):$("#genericDateBox");let timeEl=target==="event"?$("#eventTime"):target==="trade"?$("#tradeTime"):$("#time");$("#mainPickDate").value=box?.querySelector("input")?.value||"";$("#mainPickTime").value=timeEl?.value||"";$("#mainDTModal").style.display="block"}
 function closeMainDT(){$("#mainDTModal").style.display="none";mainDTTarget=""}
 function confirmMainDT(){let target=mainDTTarget;let box=target==="event"?$("#eventDateBox"):target==="trade"?$("#tradeDateBox"):$("#genericDateBox");let timeEl=target==="event"?$("#eventTime"):target==="trade"?$("#tradeTime"):$("#time");let date=$("#mainPickDate").value,time=$("#mainPickTime").value;if(box)box.innerHTML=dateInputHTML(date,`this.dataset.sync=this.value`,target==="event"?"活動日期":"日期");if(timeEl)timeEl.value=time;updateMainDTButtons();closeMainDT()}
@@ -632,7 +611,7 @@ function dateInputHTML(value,onchangeCode,label){
 
 const $=s=>document.querySelector(s), DATAKEY="secretaryV8", SYSKEY="secretaryV8Systems";
 let records=JSON.parse(localStorage.getItem(DATAKEY)||"[]");
-let migrated=false;records.forEach(r=>{if(r.main==="面交"){r.main="交易";migrated=true}});if(migrated)localStorage.setItem(DATAKEY,JSON.stringify(records));
+records.forEach(r=>{if(r.main==="面交")r.main="交易"});
 let systems=JSON.parse(localStorage.getItem(SYSKEY)||'null')||[
 {name:"拓元",required:["訂單編號","取票序號"],methods:["7-11","全家","現場取票","寄送"],defaultMethod:"7-11"},
 {name:"KKTIX",required:["訂單編號"],methods:["全家","現場取票","電子票券"],defaultMethod:"全家"},
@@ -643,7 +622,6 @@ let saleDTIndex=-1,sales=[],photos=[],previewIndex=-1,currentCategory='工作',c
 let tradeItems=[];
 function addTradeItem(item){tradeItems.push(item||{name:"",qty:1});renderTradeItems()}
 function renderTradeItems(){let box=$("#tradeItems");if(!box)return;box.innerHTML=tradeItems.map((x,i)=>`<div class="tradeItem"><div class="field"><input placeholder="品名" value="${esc(x.name||"")}" oninput="tradeItems[${i}].name=this.value"></div><div class="field"><input type="number" min="1" value="${Number(x.qty)||1}" oninput="tradeItems[${i}].qty=Math.max(1,Number(this.value)||1)"></div><button type="button" class="tradeDel" onclick="tradeItems.splice(${i},1);renderTradeItems()">×</button></div>`).join("")}
-function openOtherActivityMap(){let q=$("#otherActivityLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
 function openTradeMap(){let q=$("#tradeLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
 
 function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("#"+id).classList.add("on");scrollTo(0,0)}
@@ -665,6 +643,43 @@ function ui(){
  if($("#orderScheduleRow"))$("#orderScheduleRow").style.display=order?"grid":"none";
  if(concert){renderSystems();renderSales();renderPickup()}
 }
+function toggleSec(id,arrow){let e=$("#"+id),a=$("#"+arrow),hide=!e.classList.contains("hidden");e.classList.toggle("hidden",hide);a.textContent=hide?"›":"⌄"}
+function renderSystems(){let s=$("#ticketSystem"),v=s.value;s.innerHTML=systems.map(x=>`<option>${x.name}</option>`).join("");if(systems.some(x=>x.name===v))s.value=v;renderPickup()}
+function saleDTText(x){return [md(x.date),x.time].filter(Boolean).join(" ")||"日期時間"}
+function openSaleDT(i){saleDTIndex=i;$("#salePickDate").value=sales[i].date||"";$("#salePickTime").value=sales[i].time||"";$("#saleDTModal").style.display="block"}
+function closeSaleDT(){$("#saleDTModal").style.display="none";saleDTIndex=-1}
+function confirmSaleDT(){if(saleDTIndex<0)return;sales[saleDTIndex].date=$("#salePickDate").value;sales[saleDTIndex].time=$("#salePickTime").value;closeSaleDT();renderSales()}
+function addSale(){sales.push({date:"",time:"",type:"公售",related:""});renderSales()}
+function renderSales(){let h=sales.map((x,i)=>`<div class="saleRow">
+<div class="field saleDateTime"><button type="button" onclick="openSaleDT(${i})">${saleDTText(x)}</button></div><i></i>
+<div class="field"><select onchange="sales[${i}].type=this.value;sales[${i}].related='';renderSales()"><option ${x.type==="公售"?"selected":""}>公售</option><option ${x.type==="卡友"?"selected":""}>卡友</option><option ${x.type==="會員"?"selected":""}>會員</option><option ${x.type==="其它"?"selected":""}>其它</option></select></div><i></i>
+<div>${relatedHTML(x,i)}</div><button class="del" onclick="sales.splice(${i},1);renderSales()">刪除</button></div>`).join("");$("#saleRows").innerHTML=h||'<div class="muted" style="padding:4px">尚未新增售票資訊</div>'}
+function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員"||x.type==="其它")return `<div class="field related"><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
+function addBank(i){let b=prompt("輸入銀行名稱");if(b){sales[i].related=b;renderSales()}}
+function currentSystem(){return systems.find(x=>x.name===$("#ticketSystem").value)||systems[0]}
+function systemChanged(){renderPickup()}
+function renderPickup(){let box=$("#pickupBody");if(!box||!systems.length)return;let s=currentSystem();let vals={};box.querySelectorAll("[data-key]").forEach(e=>vals[e.dataset.key]=e.value);let fields=s.required.map((r,j)=>`<div class="pickupItem"><div class="label">${r}</div><div class="field"><input data-key="${r}" value="${vals[r]||""}"></div></div>`).join("");box.innerHTML=`<div class="pickupGrid">${fields}</div><div class="label">取票方式</div><div class="field"><select id="pickupMethod">${s.methods.map(m=>`<option ${m===s.defaultMethod?"selected":""}>${m}</option>`).join("")}</select></div>`}
+function openManager(){renderManageSelect();$("#manager").style.display="block";loadManager()}
+function closeManager(){$("#manager").style.display="none"}
+function renderManageSelect(){let s=$("#manageSystem");s.innerHTML=systems.map((x,i)=>`<option value="${i}">${x.name}</option>`).join("")}
+function loadManager(){let x=systems[+$("#manageSystem").value||0];$("#manageName").value=x.name;$("#requiredList").innerHTML=x.required.map((v,i)=>mgrRow("required",v,i)).join("");$("#methodList").innerHTML=x.methods.map((v,i)=>mgrRow("method",v,i)).join("");renderDefault(x)}
+function mgrRow(t,v,i){return `<div class="managerRow"><div class="field"><input value="${v}" data-${t}="${i}"></div><button class="smallplus" onclick="${t==="required"?"addRequired()":"addMethod()"}">＋</button><button class="smallplus" onclick="removeMgr('${t}',${i})">−</button></div>`}
+function renderDefault(x){$("#defaultMethod").innerHTML=x.methods.map(m=>`<option ${m===x.defaultMethod?"selected":""}>${m}</option>`).join("")}
+function collectManager(){let idx=+$("#manageSystem").value||0,x=systems[idx];x.name=$("#manageName").value||x.name;x.required=[...document.querySelectorAll("[data-required]")].map(e=>e.value).filter(Boolean);x.methods=[...document.querySelectorAll("[data-method]")].map(e=>e.value).filter(Boolean);x.defaultMethod=$("#defaultMethod").value||x.methods[0]||"";return x}
+function addRequired(){let x=collectManager();x.required.push("新欄位");loadManager()}
+function addMethod(){let x=collectManager();x.methods.push("新方式");loadManager()}
+function removeMgr(t,i){let x=collectManager();(t==="required"?x.required:x.methods).splice(i,1);if(!x.methods.includes(x.defaultMethod))x.defaultMethod=x.methods[0]||"";loadManager()}
+function newSystem(){systems.push({name:"新售票系統",required:["取票資料"],methods:["7-11"],defaultMethod:"7-11"});renderManageSelect();$("#manageSystem").value=systems.length-1;loadManager()}
+function saveManager(){collectManager();localStorage.setItem(SYSKEY,JSON.stringify(systems));renderSystems();closeManager()}
+function deleteManagedSystem(){if(systems.length<=1){alert("至少需要保留一個售票系統");return}let idx=+$("#manageSystem").value||0,name=systems[idx].name;if(!confirm("確定刪除「"+name+"」售票系統？"))return;systems.splice(idx,1);localStorage.setItem(SYSKEY,JSON.stringify(systems));renderManageSelect();$("#manageSystem").value=0;loadManager();renderSystems()}
+function openMap(){let q=$("#eventLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+function openOtherActivityMap(){let q=$("#otherActivityLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+function openGenericMap(){let q=$("#location").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
+function pickFiles(fs){[...fs].slice(0,10-photos.length).forEach(f=>{let r=new FileReader();r.onload=()=>{photos.push({data:r.result,at:Date.now()});renderPhotos()};r.readAsDataURL(f)})}
+$("#camera").onchange=e=>pickFiles(e.target.files);$("#files").onchange=e=>pickFiles(e.target.files);
+function renderPhotos(){$("#count").textContent=photos.length+" 張";$("#thumbs").innerHTML=photos.map((p,i)=>`<img class="thumb" src="${p.data}" onclick="togglePreview(${i})">`).join("");if(previewIndex>=photos.length){previewIndex=-1;$("#preview").style.display="none"}}
+function togglePreview(i){if(previewIndex===i){previewIndex=-1;$("#preview").style.display="none"}else{previewIndex=i;$("#previewImg").src=photos[i].data;$("#preview").style.display="block"}}
+function deleteCurrentPhoto(){if(previewIndex<0)return;photos.splice(previewIndex,1);previewIndex=-1;$("#preview").style.display="none";renderPhotos()}
 function openAdd(){sales=[{date:"",time:"",type:"公售",related:""}];tradeItems=[];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["location","title","memo","vendor","eventName","eventLocation","tradeLocation","tradeTitle","tradeContact","tradeMemo","otherActivityLocation","otherActivityTitle","otherActivityMemo"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});["tradeBuy","tradeSell","tradeSwap"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#tradeDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=nowTime;$("#otherActivityDate").value=todayISO;$("#otherActivityTime").value=nowTime;$("#del30").checked=false;["orderMorning","orderNoon","orderEvening"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});ui();updateMainDTButtons();renderTradeItems();renderPhotos();show("form")}
 function cleanup(){let now=Date.now(),changed=false;records.forEach(r=>{if(r.delete30&&r.photos){let n=r.photos.filter(p=>now-p.at<2592000000);if(n.length!==r.photos.length){r.photos=n;changed=true}}});if(changed)localStorage.setItem(DATAKEY,JSON.stringify(records))}
 function save(){
@@ -780,7 +795,7 @@ function renderCategory(){
        <b>${r.main==="工作"&&r.sub==="下單"
  ? esc([r.vendor,r.title].filter(Boolean).join("-")||"未命名")
  : esc(r.title||r.vendor||"未命名")}</b>
-       <span class="muted">${r.main==="工作"&&r.sub==="下單"?[r.date,(r.orderDayparts||[]).join("／")].filter(Boolean).map(esc).join(" · "):[r.date,r.time,r.location].filter(Boolean).map(esc).join(" · ")}</span>
+       <span class="muted">${[r.date,r.time,r.location].filter(Boolean).map(esc).join(" · ")}</span>
      </span>
      <span class="doneBox" role="checkbox" aria-label="標記已完成" onclick="markRecordDone(${r.id},event)">✓</span>
    </button>
@@ -791,31 +806,89 @@ function detailRecords(){let arr=records.filter(r=>!r.completed&&((currentCatego
 function updateDetailNav(){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),p=$("#prevRecordBtn"),n=$("#nextRecordBtn");if(p)p.disabled=i<=0;if(n)n.disabled=i<0||i>=arr.length-1}
 function moveDetail(step){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),next=arr[i+step];if(next)openDetail(next.id)}
 function openDetail(id){currentRecordId=id;let r=records.find(x=>x.id===id);if(!r)return;let rows=[];let add=(k,v)=>{if(v)rows.push(`<div class="detailLine"><div class="detailLabel">${k}</div><div class="detailValue">${esc(v)}</div></div>`)};add("分類",[(r.main==="面交"?"交易":r.main),r.sub].filter(Boolean).join("／"));add("標題／活動名稱",r.title);add("廠商",r.vendor);add("日期",r.date);if(r.main==="工作"&&r.sub==="下單")add("時段",(r.orderDayparts||[]).join("／"));else add("時間",r.time);add("地點",r.location);
-if(r.main==="交易"||r.main==="面交"){add("姓名／聯絡方式",r.contact);add("買賣換",(r.tradeTypes||[]).join("／"));if(r.tradeItems?.length)rows.push(`<div class="card"><b>商品</b>${r.tradeItems.map(x=>`<div class="detailLine"><div class="detailValue">${esc(x.name||"未命名")} × ${Number(x.qty)||1}</div></div>`).join("")}</div>`)}
 if(r.main==="活動"&&r.sub==="演唱會"){add("售票系統",r.ticketSystem);if(r.sales?.length)rows.push(`<div class="card"><b>售票資訊</b>${r.sales.map(s=>`<div class="detailLine"><div class="detailValue">${[s.date,s.time,s.type,s.related].filter(Boolean).map(esc).join(" ｜ ")}</div></div>`).join("")}</div>`);if(r.pickup&&Object.keys(r.pickup).length)rows.push(`<div class="card"><b>取票資訊</b>${Object.entries(r.pickup).map(([k,v])=>`<div class="detailLine"><span class="detailLabel">${esc(k)}</span><div class="detailValue">${esc(v)}</div></div>`).join("")}${r.pickupMethod?`<div class="detailLine"><span class="detailLabel">取票方式</span><div class="detailValue">${esc(r.pickupMethod)}</div></div>`:""}</div>`)}
 add("備註",r.memo);if(r.photos?.length)rows.push(`<div class="card"><b>活動照片</b><div class="detailPhotos">${r.photos.map(p=>`<img class="detailPhoto" src="${p.data}" onclick="this.style.width=this.style.width==='100%'?'70px':'100%';this.style.height=this.style.width==='100%'?'auto':'70px'">`).join("")}</div></div>`);$("#detailBody").innerHTML=`<div class="card">${rows.join("")}</div>`;show("detail");updateDetailNav()}
 function backToCategory(){openCategory(currentCategory,currentSub)}
 function deleteCurrentRecord(){if(!confirm("確定刪除這筆紀錄？"))return;records=records.filter(x=>x.id!==currentRecordId);localStorage.setItem(DATAKEY,JSON.stringify(records));renderHome();openCategory(currentCategory,currentSub)}
 function editCurrent(){
- let r=records.find(x=>x.id===currentRecordId);if(!r)return;editingId=r.id;
- $("#main").value=r.main==="面交"?"交易":r.main;setSubs();if(r.sub)$("#sub").value=r.sub;ui();
- $("#vendor").value=r.vendor||"";photos=JSON.parse(JSON.stringify(r.photos||[]));$("#del30").checked=!!r.delete30;
+ let r=records.find(x=>String(x.id)===String(currentRecordId));
+ if(!r){alert("找不到這筆紀錄，請返回清單後重新開啟");return}
+
+ editingId=r.id;
+
+ let mainEl=$("#main");
+ if(!mainEl)return;
+ mainEl.value=r.main==="面交"?"交易":r.main;
+ setSubs();
+ if(r.sub&&$("#sub"))$("#sub").value=r.sub;
+ ui();
+
+ if($("#vendor"))$("#vendor").value=r.vendor||"";
+
+ // 照片功能：修改時完整載回原照片
+ photos=JSON.parse(JSON.stringify(r.photos||[]));
+ previewIndex=-1;
+ if($("#preview"))$("#preview").style.display="none";
+ if($("#del30"))$("#del30").checked=!!r.delete30;
+
  if(r.main==="活動"&&r.sub==="演唱會"){
-   $("#eventName").value=r.title||"";$("#eventDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=r.time||"";$("#eventLocation").value=r.location||"";
-   renderSystems();if(r.ticketSystem&&systems.some(x=>x.name===r.ticketSystem))$("#ticketSystem").value=r.ticketSystem;sales=JSON.parse(JSON.stringify(r.sales||[]));renderSales();renderPickup();
-   setTimeout(()=>{if(r.pickup)$("#pickupBody").querySelectorAll("[data-key]").forEach(e=>e.value=r.pickup[e.dataset.key]||"");if($("#pickupMethod")&&r.pickupMethod)$("#pickupMethod").value=r.pickupMethod},0);
+   if($("#eventName"))$("#eventName").value=r.title||"";
+   if($("#eventDateBox"))$("#eventDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"活動日期");
+   if($("#eventTime"))$("#eventTime").value=r.time||"";
+   if($("#eventLocation"))$("#eventLocation").value=r.location||"";
+
+   renderSystems();
+   if(r.ticketSystem&&systems.some(x=>x.name===r.ticketSystem)&&$("#ticketSystem"))$("#ticketSystem").value=r.ticketSystem;
+   sales=JSON.parse(JSON.stringify(r.sales||[]));
+   renderSales();
+   renderPickup();
+
+   setTimeout(()=>{
+     if(r.pickup&&$("#pickupBody")){
+       $("#pickupBody").querySelectorAll("[data-key]").forEach(e=>e.value=r.pickup[e.dataset.key]||"")
+     }
+     if($("#pickupMethod")&&r.pickupMethod)$("#pickupMethod").value=r.pickupMethod;
+   },0);
+
  }else if(r.main==="工作"&&r.sub==="下單"){
-   $("#genericDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");$("#title").value=r.title||"";$("#memo").value=r.memo||"";
-   $("#orderMorning").checked=(r.orderDayparts||[]).includes("早");$("#orderNoon").checked=(r.orderDayparts||[]).includes("中")||(r.orderDayparts||[]).includes("午");$("#orderEvening").checked=(r.orderDayparts||[]).includes("晚");
+   if($("#genericDateBox"))$("#genericDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");
+   if($("#title"))$("#title").value=r.title||"";
+   if($("#memo"))$("#memo").value=r.memo||"";
+   if($("#orderMorning"))$("#orderMorning").checked=(r.orderDayparts||[]).includes("早");
+   if($("#orderNoon"))$("#orderNoon").checked=(r.orderDayparts||[]).includes("中")||(r.orderDayparts||[]).includes("午");
+   if($("#orderEvening"))$("#orderEvening").checked=(r.orderDayparts||[]).includes("晚");
+
  }else if(r.main==="活動"&&["展覽","電影","其它"].includes(r.sub)){
-   $("#otherActivityDate").value=r.date||"";$("#otherActivityTime").value=r.time||"";$("#otherActivityLocation").value=r.location||"";$("#otherActivityTitle").value=r.title||"";$("#otherActivityMemo").value=r.memo||"";
+   if($("#otherActivityDate"))$("#otherActivityDate").value=r.date||"";
+   if($("#otherActivityTime"))$("#otherActivityTime").value=r.time||"";
+   if($("#otherActivityLocation"))$("#otherActivityLocation").value=r.location||"";
+   if($("#otherActivityTitle"))$("#otherActivityTitle").value=r.title||"";
+   if($("#otherActivityMemo"))$("#otherActivityMemo").value=r.memo||"";
+
  }else if(r.main==="交易"||r.main==="面交"){
-   $("#tradeDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=r.time||"";$("#tradeLocation").value=r.location||"";$("#tradeTitle").value=r.title||"";$("#tradeContact").value=r.contact||"";$("#tradeMemo").value=r.memo||"";
-   $("#tradeBuy").checked=(r.tradeTypes||[]).includes("買");$("#tradeSell").checked=(r.tradeTypes||[]).includes("賣");$("#tradeSwap").checked=(r.tradeTypes||[]).includes("換");tradeItems=JSON.parse(JSON.stringify(r.tradeItems||[]));renderTradeItems();
+   if($("#tradeDateBox"))$("#tradeDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");
+   if($("#tradeTime"))$("#tradeTime").value=r.time||"";
+   if($("#tradeLocation"))$("#tradeLocation").value=r.location||"";
+   if($("#tradeTitle"))$("#tradeTitle").value=r.title||"";
+   if($("#tradeContact"))$("#tradeContact").value=r.contact||"";
+   if($("#tradeMemo"))$("#tradeMemo").value=r.memo||"";
+   if($("#tradeBuy"))$("#tradeBuy").checked=(r.tradeTypes||[]).includes("買");
+   if($("#tradeSell"))$("#tradeSell").checked=(r.tradeTypes||[]).includes("賣");
+   if($("#tradeSwap"))$("#tradeSwap").checked=(r.tradeTypes||[]).includes("換");
+   tradeItems=JSON.parse(JSON.stringify(r.tradeItems||[]));
+   renderTradeItems();
+
  }else{
-   $("#genericDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");$("#time").value=r.time||"";$("#location").value=r.location||"";$("#title").value=r.title||"";$("#memo").value=r.memo||"";
+   if($("#genericDateBox"))$("#genericDateBox").innerHTML=dateInputHTML(r.date||"",`this.dataset.sync=this.value`,"日期");
+   if($("#time"))$("#time").value=r.time||"";
+   if($("#location"))$("#location").value=r.location||"";
+   if($("#title"))$("#title").value=r.title||"";
+   if($("#memo"))$("#memo").value=r.memo||"";
  }
- updateMainDTButtons();renderPhotos();show("form")
+
+ updateMainDTButtons();
+ renderPhotos();
+ show("form");
 }
 
 renderHome();ui();
