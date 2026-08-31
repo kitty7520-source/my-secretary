@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V50</title>
+<title>我的小秘書 V52</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -620,17 +620,32 @@ body.orderMode #orderScheduleRow{display:grid!important}
   font-size:17px!important;
 }
 
-/* V43 工作－下單重複提醒 */
+/* V52 工作－下單重複提醒：全部維持同一排的緊湊版 */
 #orderScheduleRow{
-  grid-template-columns:max-content repeat(3,max-content) max-content!important;
+  grid-template-columns:max-content max-content minmax(0,1fr)!important;
   align-items:center!important;
-  gap:8px!important;
+  gap:3px!important;
+  width:100%!important;
 }
-.orderRepeatCheck{display:flex;align-items:center;gap:3px;white-space:nowrap}
-.orderRepeatRow{display:flex;align-items:center;gap:6px;margin-top:6px}
+#orderDateOnly{display:flex!important;align-items:center!important;gap:2px!important;width:max-content!important;min-width:0!important}
+#orderDateOnly .dateTimeBtn{font-size:16px!important;padding:0!important}
+.orderRepeatCheck{display:flex;align-items:center;gap:1px;white-space:nowrap;font-size:12px}
+.orderRepeatCheck input{width:15px;height:15px;margin:0}
+.orderRepeatRow{display:flex;align-items:center;gap:2px;margin:0;min-width:0;font-size:12px}
 .orderRepeatRow.hidden{display:none!important}
-#orderRepeatEvery{width:58px;min-width:58px;text-align:center}
-#orderRepeatUnit{width:76px}
+#orderRepeatEvery{width:36px;min-width:36px;height:30px;text-align:center;padding:0 2px;font-size:12px}
+#orderRepeatUnit{width:52px;min-width:52px;height:30px;padding:0 2px;font-size:12px}
+#orderScheduleRow .dayparts{grid-column:auto!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:2px!important;width:100%!important;min-width:0!important}
+#orderScheduleRow .daypartCheck{width:100%!important;min-width:0!important;height:30px!important;gap:1px!important;font-size:12px!important;padding:0 1px!important}
+#orderScheduleRow .daypartCheck input{width:15px!important;height:15px!important;min-width:15px!important}
+@media(max-width:390px){
+ #orderScheduleRow{gap:2px!important}
+ #orderDateOnly .dateTimeBtn{font-size:15px!important}
+ .orderRepeatCheck,.orderRepeatRow{font-size:11px!important}
+ #orderRepeatEvery{width:32px;min-width:32px}
+ #orderRepeatUnit{width:48px;min-width:48px}
+ #orderScheduleRow .daypartCheck{font-size:11px!important}
+}
 
 /* V49 三條線側邊選單 */
 .menuBtn{width:42px;height:42px;border:0;background:transparent;color:#392f2a;border-radius:10px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;touch-action:manipulation}
