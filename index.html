@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V45</title>
+<title>我的小秘書 V50</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -506,6 +506,7 @@
 .homeReminderTitle{border:0;background:transparent;padding:0;margin:0;width:100%;text-align:left;color:inherit;font:inherit}
 .homeReminderTitle b{display:block}
 .homeDoneBtn{width:32px;height:32px;border:1px solid #cfc2bb;border-radius:8px;background:#fff;color:#795747;font-size:19px;font-weight:800;padding:0}
+.homeDoneBtn{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 
 /* V34 工作－下單：只保留日期＋早中晚 */
 body.orderMode #genericDateLocationRow{display:none!important}
@@ -552,6 +553,73 @@ body.orderMode #orderScheduleRow{display:grid!important}
   padding:0!important;
 }
 
+/* V48 展覽／電影／其它／交易：日期時間與地點完全比照活動－演唱會 */
+#tradeUI .activityline,
+#activityOtherUI .activityline{
+  display:grid!important;
+  grid-template-columns:max-content minmax(0,1fr)!important;
+  column-gap:0!important;
+  gap:0!important;
+  align-items:center!important;
+}
+#tradeUI .dtCombined,
+#activityOtherUI .dtCombined{
+  width:max-content!important;
+  min-width:0!important;
+  height:auto!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+}
+#tradeUI .dateTimeBtn,
+#activityOtherUI .dateTimeBtn{
+  width:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+  font-size:16px!important;
+  font-weight:600!important;
+  line-height:1.2!important;
+  white-space:nowrap!important;
+}
+#tradeUI .locationCombined,
+#activityOtherUI .locationCombined{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+#tradeUI .locfield,
+#activityOtherUI .locfield{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 28px!important;
+  gap:0!important;
+  width:100%!important;
+  margin:0!important;
+  align-items:center!important;
+}
+#tradeUI .locfield .field,
+#activityOtherUI .locfield .field{
+  width:100%!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#tradeUI .mapbtn,
+#activityOtherUI .mapbtn{
+  width:28px!important;
+  min-width:28px!important;
+  height:32px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  font-size:17px!important;
+}
+
 /* V43 工作－下單重複提醒 */
 #orderScheduleRow{
   grid-template-columns:max-content repeat(3,max-content) max-content!important;
@@ -564,13 +632,24 @@ body.orderMode #orderScheduleRow{display:grid!important}
 #orderRepeatEvery{width:58px;min-width:58px;text-align:center}
 #orderRepeatUnit{width:76px}
 
-/* V45 個人化設定（安全背景版） */
+/* V49 三條線側邊選單 */
+.menuBtn{width:42px;height:42px;border:0;background:transparent;color:#392f2a;border-radius:10px;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;touch-action:manipulation}
+.menuBtn span{display:block;width:22px;height:2px;border-radius:2px;background:currentColor}
+.menuBtn:active{background:rgba(121,87,71,.1)}
 .drawerBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.28);z-index:900}
-.sideDrawer{position:fixed;left:0;top:0;bottom:0;width:min(82vw,320px);background:#fff;z-index:901;padding:18px;box-shadow:8px 0 28px rgba(0,0,0,.16);transform:translateX(-105%);transition:transform .2s ease}
+.sideDrawer{position:fixed;left:0;top:0;bottom:0;width:min(82vw,320px);background:#fff;color:#392f2a;z-index:901;padding:18px 14px;box-shadow:8px 0 28px rgba(0,0,0,.16);transform:translateX(-105%);transition:transform .2s ease;overflow-y:auto}
 .sideDrawer.open{transform:translateX(0)}
-.drawerHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-.drawerItem{width:100%;text-align:left;border:0;background:transparent;padding:14px 10px;border-radius:12px;font-size:16px}
+.drawerHead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding:0 4px}
+.drawerHead b{font-size:20px}
+.drawerClose{width:38px;height:38px;border:0;border-radius:10px;background:transparent;color:inherit;font-size:22px}
+.drawerSection{margin-top:14px;padding:12px 6px 5px;border-top:1px solid #eee3dd;font-size:12px;font-weight:700;color:#887b75}
+.drawerItem{width:100%;text-align:left;border:0;background:transparent;padding:13px 12px;border-radius:11px;font-size:16px;color:inherit;display:flex;align-items:center;gap:11px;cursor:pointer}
+.drawerItem .drawerIcon{width:26px;text-align:center;font-size:19px}
 .drawerItem:active{background:rgba(127,127,127,.12)}
+body.drawerOpen{overflow:hidden}
+body.personalDark .menuBtn{color:#f2f2f2}
+body.personalDark .sideDrawer{background:#222;color:#f2f2f2}
+body.personalDark .drawerSection{border-color:#3b3b3b;color:#aaa}
 
 .personalModal{position:fixed;inset:0;z-index:950;background:rgba(0,0,0,.34);display:flex;align-items:flex-end;justify-content:center}
 .personalPanel{width:100%;max-width:620px;max-height:88vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:20px;color:#222}
@@ -603,7 +682,7 @@ body.hasPersonalBg{background-repeat:no-repeat!important;background-attachment:f
 }
 
 </style></head><body><div class="app">
-<section id="home" class="page on"><div class="top"><span>☰</span><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
+<section id="home" class="page on"><div class="top"><button type="button" class="menuBtn" aria-label="開啟選單" onclick="openSideDrawer()"><span></span><span></span><span></span></button><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <div class="homeCard"><b>全部資料</b><div class="tiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('交易')">👥<br>交易</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div></section>
 
@@ -777,7 +856,7 @@ function addTradeItem(item){tradeItems.push(item||{name:"",qty:1});renderTradeIt
 function renderTradeItems(){let box=$("#tradeItems");if(!box)return;box.innerHTML=tradeItems.map((x,i)=>`<div class="tradeItem"><div class="field"><input placeholder="品名" value="${esc(x.name||"")}" oninput="tradeItems[${i}].name=this.value"></div><div class="field"><input type="number" min="1" value="${Number(x.qty)||1}" oninput="tradeItems[${i}].qty=Math.max(1,Number(this.value)||1)"></div><button type="button" class="tradeDel" onclick="tradeItems.splice(${i},1);renderTradeItems()">×</button></div>`).join("")}
 function openTradeMap(){let q=$("#tradeLocation").value;if(q)window.open("https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q),"_blank")}
 
-function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("#"+id).classList.add("on");scrollTo(0,0)}
+function show(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("on"));$("#"+id).classList.add("on");scrollTo(0,0);if(typeof applyPersonalSettings==="function")applyPersonalSettings()}
 function setSubs(){let m=$("#main").value,s=$("#sub"),old=s.value;s.innerHTML=m==="工作"?'<option>下單</option><option>記事</option>':m==="活動"?'<option>演唱會</option><option>展覽</option><option>電影</option><option>其它</option>':"";if([...s.options].some(o=>o.value===old))s.value=old}
 function ui(){
  setSubs();
@@ -991,10 +1070,11 @@ function renderHome(){
    return (a.r.time||"23:59").localeCompare(b.r.time||"23:59");
  });
 
- let html="";
+ let html="",homeActions=[];
 
  groupedOrders.forEach(g=>{
    let ids=g.records.map(r=>({id:r.id,stage:reminderStageForRecord(r)}));
+   let actionIndex=homeActions.push(ev=>dismissOrderGroup(ids,ev))-1;
    let vendors=[...new Set(g.records.map(r=>(r.vendor||r.title||"未命名").trim()).filter(Boolean))];
    let firstId=g.records[0].id;
    let partText=g.part==="中"?"午":g.part;
@@ -1005,12 +1085,13 @@ function renderHome(){
          <span class="muted">${[md(g.date),partText,"下單"].filter(Boolean).map(esc).join(" ")}</span>
        </button>
      </div>
-     <button type="button" class="homeDoneBtn" aria-label="已處理" onclick='dismissOrderGroup(${JSON.stringify(ids)},event)'>✓</button>
+     <button type="button" class="homeDoneBtn" data-home-action="${actionIndex}" aria-label="已處理">✓</button>
    </div>`;
  });
 
  saleItems.forEach(({r,sale,index,stage})=>{
    let title=r.title||"未命名活動";
+   let actionIndex=homeActions.push(ev=>dismissHomeReminder(r.id,stage,ev))-1;
    html+=`<div class="homeCard homeReminder">
      <div class="homeReminderMain">
        <button type="button" class="homeReminderTitle" onclick="openHomeDetail(${JSON.stringify(r.id)})">
@@ -1018,12 +1099,13 @@ function renderHome(){
          <span class="muted">${[saleDTText(sale),saleLabel(sale)].filter(Boolean).map(esc).join(" ")}</span>
        </button>
      </div>
-     <button type="button" class="homeDoneBtn" aria-label="已處理" onclick="dismissHomeReminder(${JSON.stringify(r.id)},${JSON.stringify(stage)},event)">✓</button>
+     <button type="button" class="homeDoneBtn" data-home-action="${actionIndex}" aria-label="已處理">✓</button>
    </div>`;
  });
 
  otherItems.forEach(({r,stage})=>{
    let title=r.title||r.vendor||r.main||"未命名";
+   let actionIndex=homeActions.push(ev=>dismissHomeReminder(r.id,stage,ev))-1;
    html+=`<div class="homeCard homeReminder">
      <div class="homeReminderMain">
        <button type="button" class="homeReminderTitle" onclick="openHomeDetail(${JSON.stringify(r.id)})">
@@ -1036,11 +1118,15 @@ function renderHome(){
 ].filter(Boolean).map(esc).join(" ")}</span>
        </button>
      </div>
-     <button type="button" class="homeDoneBtn" aria-label="已處理" onclick="dismissHomeReminder(${JSON.stringify(r.id)},${JSON.stringify(stage)},event)">✓</button>
+     <button type="button" class="homeDoneBtn" data-home-action="${actionIndex}" aria-label="已處理">✓</button>
    </div>`;
  });
 
  $("#reminders").innerHTML=html||'<div class="homeCard muted">目前沒有需要處理的提醒事項</div>';
+ $("#reminders").querySelectorAll(".homeDoneBtn[data-home-action]").forEach(btn=>{
+   let action=homeActions[Number(btn.dataset.homeAction)];
+   btn.onclick=ev=>{if(action)action(ev)};
+ });
 
  applyPersonalSettings();}
 function openCategory(cat,sub){currentCategory=cat;currentSub=sub||"";$("#catTitle").textContent=cat;renderCategory();show("category")}
@@ -1195,10 +1281,15 @@ const PERSONAL_KEY="secretaryV8PersonalSettings";
 let personalBgDraft="";
 
 function defaultPersonalSettings(){
- return {bg:"",bgSize:"cover",bgPosition:"center center",theme:"light",fontSize:"normal",showAllData:true,showReminders:true,compactReminders:false};
+ return {bg:"",backgrounds:{home:"",work:"",trade:"",activity:""},bgSize:"cover",bgPosition:"center center",theme:"light",fontSize:"normal",showAllData:true,showReminders:true,compactReminders:false};
 }
 function getPersonalSettings(){
- try{return Object.assign(defaultPersonalSettings(),JSON.parse(localStorage.getItem(PERSONAL_KEY)||"{}"))}
+ try{
+   let raw=JSON.parse(localStorage.getItem(PERSONAL_KEY)||"{}"),s=Object.assign(defaultPersonalSettings(),raw);
+   s.backgrounds=Object.assign({home:"",work:"",trade:"",activity:""},raw.backgrounds||{});
+   if(raw.bg&&!raw.backgrounds&&!s.backgrounds.home)s.backgrounds.home=raw.bg;
+   return s;
+ }
  catch(e){return defaultPersonalSettings()}
 }
 function setPersonalSettingsSafe(s){
@@ -1213,15 +1304,21 @@ function setPersonalSettingsSafe(s){
 function openSideDrawer(){
  $("#sideDrawer")?.classList.add("open");
  $("#sideDrawerBackdrop")?.classList.remove("hidden");
+ document.body.classList.add("drawerOpen");
 }
 function closeSideDrawer(){
  $("#sideDrawer")?.classList.remove("open");
  $("#sideDrawerBackdrop")?.classList.add("hidden");
+ document.body.classList.remove("drawerOpen");
 }
+function drawerGoHome(){closeSideDrawer();show("home")}
+function drawerOpenAdd(){closeSideDrawer();openAdd()}
+function drawerOpenCategory(cat){closeSideDrawer();openCategory(cat)}
 function openPersonalSettings(){
  closeSideDrawer();
  let s=getPersonalSettings();
  personalBgDraft="";
+ if($("#personalBgTarget"))$("#personalBgTarget").value="home";
  if($("#personalBgSize"))$("#personalBgSize").value=s.bgSize;
  if($("#personalBgPosition"))$("#personalBgPosition").value=s.bgPosition;
  if($("#personalTheme"))$("#personalTheme").value=s.theme;
@@ -1230,15 +1327,7 @@ function openPersonalSettings(){
  if($("#personalShowReminders"))$("#personalShowReminders").checked=s.showReminders!==false;
  if($("#personalCompactReminders"))$("#personalCompactReminders").checked=!!s.compactReminders;
 
- let wrap=$("#personalBgPreviewWrap"),img=$("#personalBgPreview"),btn=$("#personalApplyBgBtn");
- if(s.bg){
-   if(img)img.src=s.bg;
-   wrap?.classList.remove("hidden");
- }else{
-   if(img)img.removeAttribute("src");
-   wrap?.classList.add("hidden");
- }
- btn?.classList.add("hidden");
+ refreshPersonalBgPreview();
  $("#personalSettingsModal")?.classList.remove("hidden");
 }
 function closePersonalSettings(){
@@ -1251,13 +1340,13 @@ function compressBackgroundFile(file,callback){
  reader.onload=function(){
    let img=new Image();
    img.onload=function(){
-     let maxSide=1600,w=img.width,h=img.height;
+     let maxSide=1200,w=img.width,h=img.height;
      let scale=Math.min(1,maxSide/Math.max(w,h));
      let cw=Math.max(1,Math.round(w*scale)),ch=Math.max(1,Math.round(h*scale));
      let canvas=document.createElement("canvas");canvas.width=cw;canvas.height=ch;
      let ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,cw,ch);
      let out;
-     try{out=canvas.toDataURL("image/jpeg",0.82)}catch(e){out=reader.result}
+     try{out=canvas.toDataURL("image/jpeg",0.72)}catch(e){out=reader.result}
      callback(out);
    };
    img.onerror=function(){alert("這張圖片無法讀取，請換一張圖片。")};
@@ -1277,13 +1366,23 @@ function previewPersonalBg(ev){
    btn?.classList.remove("hidden");
  });
 }
+function personalBgTarget(){return $("#personalBgTarget")?.value||"home"}
+function refreshPersonalBgPreview(){
+ personalBgDraft="";
+ let s=getPersonalSettings(),data=s.backgrounds?.[personalBgTarget()]||"";
+ let wrap=$("#personalBgPreviewWrap"),img=$("#personalBgPreview"),btn=$("#personalApplyBgBtn");
+ if($("#personalBgFile"))$("#personalBgFile").value="";
+ if(data){if(img)img.src=data;wrap?.classList.remove("hidden")}
+ else{if(img)img.removeAttribute("src");wrap?.classList.add("hidden")}
+ btn?.classList.add("hidden");
+}
 function applyPreviewBackground(){
  if(!personalBgDraft)return;
  let s=getPersonalSettings();
- let old=s.bg;
- s.bg=personalBgDraft;
+ let target=personalBgTarget(),old=s.backgrounds[target];
+ s.backgrounds[target]=personalBgDraft;
  if(!setPersonalSettingsSafe(s)){
-   s.bg=old;
+   s.backgrounds[target]=old;
    return;
  }
  personalBgDraft="";
@@ -1291,7 +1390,7 @@ function applyPreviewBackground(){
  applyPersonalSettings();
 }
 function clearPersonalBg(){
- let s=getPersonalSettings();s.bg="";
+ let s=getPersonalSettings();s.backgrounds[personalBgTarget()]="";
  setPersonalSettingsSafe(s);
  personalBgDraft="";
  if($("#personalBgFile"))$("#personalBgFile").value="";
@@ -1324,10 +1423,12 @@ function applyPersonalSettings(){
  document.body.classList.toggle("personalSmall",s.fontSize==="small");
  document.body.classList.toggle("personalLarge",s.fontSize==="large");
  document.body.classList.toggle("personalCompact",!!s.compactReminders);
- document.body.classList.toggle("hasPersonalBg",!!s.bg);
+ let page=document.querySelector(".page.on")?.id||"home",target=page==="home"?"home":page==="category"?({工作:"work",交易:"trade",活動:"activity"}[currentCategory]||""):"";
+ let activeBg=target?(s.backgrounds?.[target]||""):"";
+ document.body.classList.toggle("hasPersonalBg",!!activeBg);
 
- if(s.bg){
-   document.body.style.backgroundImage='url("'+s.bg+'")';
+ if(activeBg){
+   document.body.style.backgroundImage='url("'+activeBg+'")';
    document.body.style.backgroundSize=s.bgSize||"cover";
    document.body.style.backgroundPosition=s.bgPosition||"center center";
  }else{
@@ -1348,14 +1449,22 @@ function applyPersonalSettings(){
 }
 
 document.addEventListener("DOMContentLoaded",applyPersonalSettings);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();closePersonalSettings()}});
 </script>
 <div id="sideDrawerBackdrop" class="drawerBackdrop hidden" onclick="closeSideDrawer()"></div>
-<aside id="sideDrawer" class="sideDrawer">
+<aside id="sideDrawer" class="sideDrawer" aria-label="主選單">
   <div class="drawerHead">
     <b>我的小秘書</b>
-    <button class="iconbtn" onclick="closeSideDrawer()">✕</button>
+    <button type="button" class="drawerClose" aria-label="關閉選單" onclick="closeSideDrawer()">✕</button>
   </div>
-  <button class="drawerItem" onclick="openPersonalSettings()">⚙️ 個人化設定</button>
+  <button type="button" class="drawerItem" onclick="drawerGoHome()"><span class="drawerIcon">🏠</span><span>首頁</span></button>
+  <button type="button" class="drawerItem" onclick="drawerOpenAdd()"><span class="drawerIcon">＋</span><span>新增資料</span></button>
+  <div class="drawerSection">全部資料</div>
+  <button type="button" class="drawerItem" onclick="drawerOpenCategory('工作')"><span class="drawerIcon">💼</span><span>工作</span></button>
+  <button type="button" class="drawerItem" onclick="drawerOpenCategory('交易')"><span class="drawerIcon">👥</span><span>交易</span></button>
+  <button type="button" class="drawerItem" onclick="drawerOpenCategory('活動')"><span class="drawerIcon">🗓</span><span>活動</span></button>
+  <div class="drawerSection">設定</div>
+  <button type="button" class="drawerItem" onclick="openPersonalSettings()"><span class="drawerIcon">⚙️</span><span>個人化設定</span></button>
 </aside>
 
 <div id="personalSettingsModal" class="personalModal hidden">
@@ -1367,7 +1476,15 @@ document.addEventListener("DOMContentLoaded",applyPersonalSettings);
 
     <div class="personalSection">
       <b>背景圖片</b>
-      <div class="personalHint">選擇圖片後會先預覽，不會立即套用。</div>
+      <div class="personalHint">四個頁面可分別設定不同圖片；選擇後會先預覽，不會立即套用。</div>
+      <label>套用頁面
+        <select id="personalBgTarget" onchange="refreshPersonalBgPreview()">
+          <option value="home">首頁</option>
+          <option value="work">全部資料－工作</option>
+          <option value="trade">全部資料－交易</option>
+          <option value="activity">全部資料－活動</option>
+        </select>
+      </label>
 
       <label class="personalFileBtn">
         選擇圖片
