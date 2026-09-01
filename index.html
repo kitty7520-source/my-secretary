@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V52</title>
+<title>我的小秘書 V54</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -409,6 +409,9 @@
   color:#795747;
   padding:0;
 }
+.recordBtn.completedRecord{opacity:.68}
+.recordBtn.completedRecord .recordMain b{text-decoration:line-through}
+.doneBox.checked{background:#795747;color:#fff}
 
 
 /* V25 - 交易欄位 */
@@ -690,6 +693,11 @@ body.personalLarge{font-size:18px}
 body.personalCompact #reminders .homeCard{padding-top:8px!important;padding-bottom:8px!important;min-height:0!important}
 body.hasPersonalBg{background-repeat:no-repeat!important;background-attachment:fixed!important}
 
+/* V53－交易／活動頁：右上角快速開啟日常隨手記帳 */
+.moneyLink{display:none;align-items:center;justify-content:center;min-width:52px;height:36px;padding:0 9px;border:1px solid #cfc2bb;border-radius:9px;background:#fff;color:#795747;text-decoration:none;font-size:14px;font-weight:800;white-space:nowrap}
+.moneyLink.on{display:flex}
+body.personalDark .moneyLink{background:#222;color:#f2f2f2;border-color:#6b625e}
+
 /* 背景只套在 body，不把任何頁面內容透明化，避免整頁變白 */
 @media(min-width:700px){
   .personalModal{align-items:center}
@@ -701,7 +709,7 @@ body.hasPersonalBg{background-repeat:no-repeat!important;background-attachment:f
 <div class="homeCard"><b>全部資料</b><div class="tiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('交易')">👥<br>交易</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div></section>
 
-<section id="category" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1 id="catTitle">全部資料</h1><span></span></div><div id="catTabs" class="tiles"></div><div id="catList"></div></section>
+<section id="category" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1 id="catTitle">全部資料</h1><a id="moneyLink" class="moneyLink" href="https://kitty7520-source.github.io/Money/" target="_blank" rel="noopener">記帳</a></div><div id="catTabs" class="tiles"></div><div id="catList"></div></section>
 
 <section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><div class="detailTopNav"><button id="prevRecordBtn" class="detailNavBtn" onclick="moveDetail(-1)">‹</button><h1>紀錄明細</h1><button id="nextRecordBtn" class="detailNavBtn" onclick="moveDetail(1)">›</button></div><button type="button" class="btn" onclick="editCurrent()">修改</button></div><div id="detailBody"></div><button class="red wide" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
 
@@ -1144,14 +1152,14 @@ function renderHome(){
  });
 
  applyPersonalSettings();}
-function openCategory(cat,sub){currentCategory=cat;currentSub=sub||"";$("#catTitle").textContent=cat;renderCategory();show("category")}
+function openCategory(cat,sub){currentCategory=cat;currentSub=sub||"";$("#catTitle").textContent=cat;let moneyLink=$("#moneyLink");if(moneyLink)moneyLink.classList.toggle("on",cat==="交易"||cat==="活動");renderCategory();show("category")}
 
 function markRecordDone(id,ev){
  if(ev){ev.stopPropagation();ev.preventDefault()}
  let r=records.find(x=>x.id===id);
  if(!r)return;
- r.completed=true;
- r.completedAt=Date.now();
+ r.completed=!r.completed;
+ r.completedAt=r.completed?Date.now():null;
  localStorage.setItem(DATAKEY,JSON.stringify(records));
  renderHome();
  renderCategory();
@@ -1173,11 +1181,12 @@ function renderCategory(){
    tabs.innerHTML=""
  }
 
- // 不因日期過期而隱藏；只有手動勾選完成才從清單消失
- let arr=records.filter(r=>!r.completed && ((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory) && (!currentSub||r.sub===currentSub));
+ // 全部資料保留已完成紀錄；打勾只更新狀態，不刪除或隱藏
+ let arr=records.filter(r=>((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory) && (!currentSub||r.sub===currentSub));
 
  // 依日期／時間由近到遠；沒有時間的排在同日後面
  arr.sort((a,b)=>{
+   if(Boolean(a.completed)!==Boolean(b.completed))return a.completed?1:-1;
    let ad=a.date||"9999-12-31", bd=b.date||"9999-12-31";
    if(ad!==bd)return ad.localeCompare(bd);
    let at=a.time||"23:59", bt=b.time||"23:59";
@@ -1185,19 +1194,19 @@ function renderCategory(){
  });
 
  $("#catList").innerHTML=arr.length?arr.map(r=>`
-   <button class="recordBtn" onclick="openDetail(${r.id})">
+   <button class="recordBtn ${r.completed?"completedRecord":""}" onclick="openDetail(${r.id})">
      <span class="recordMain">
        <b>${r.main==="工作"&&r.sub==="下單"
  ? esc([r.vendor,r.title].filter(Boolean).join("-")||"未命名")
  : esc(r.title||r.vendor||"未命名")}</b>
        <span class="muted">${[r.date,r.time,r.location].filter(Boolean).map(esc).join(" · ")}</span>
      </span>
-     <span class="doneBox" role="checkbox" aria-label="標記已完成" onclick="markRecordDone(${r.id},event)">✓</span>
+     <span class="doneBox ${r.completed?"checked":""}" role="checkbox" aria-checked="${r.completed?"true":"false"}" aria-label="${r.completed?"取消完成":"標記已完成"}" onclick="markRecordDone(${r.id},event)">✓</span>
    </button>
- `).join(""):'<div class="homeCard muted">目前沒有未完成紀錄</div>'
+ `).join(""):'<div class="homeCard muted">目前沒有紀錄</div>'
 }
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function detailRecords(){let arr=records.filter(r=>!r.completed&&((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory)&&(!currentSub||r.sub===currentSub));arr.sort((a,b)=>{let ad=a.date||"9999-12-31",bd=b.date||"9999-12-31";if(ad!==bd)return ad.localeCompare(bd);return(a.time||"23:59").localeCompare(b.time||"23:59")});return arr}
+function detailRecords(){let arr=records.filter(r=>((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory)&&(!currentSub||r.sub===currentSub));arr.sort((a,b)=>{if(Boolean(a.completed)!==Boolean(b.completed))return a.completed?1:-1;let ad=a.date||"9999-12-31",bd=b.date||"9999-12-31";if(ad!==bd)return ad.localeCompare(bd);return(a.time||"23:59").localeCompare(b.time||"23:59")});return arr}
 function updateDetailNav(){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),p=$("#prevRecordBtn"),n=$("#nextRecordBtn");if(p)p.disabled=i<=0;if(n)n.disabled=i<0||i>=arr.length-1}
 function moveDetail(step){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),next=arr[i+step];if(next)openDetail(next.id)}
 function openDetail(id){currentRecordId=id;let r=records.find(x=>x.id===id);if(!r)return;let rows=[];let add=(k,v)=>{if(v)rows.push(`<div class="detailLine"><div class="detailLabel">${k}</div><div class="detailValue">${esc(v)}</div></div>`)};add("分類",[(r.main==="面交"?"交易":r.main),r.sub].filter(Boolean).join("／"));add("標題／活動名稱",r.title);add("廠商",r.vendor);add("日期",r.date);if(r.main==="工作"&&r.sub==="下單")add("時段",(r.orderDayparts||[]).join("／"));else add("時間",r.time);add("地點",r.location);
