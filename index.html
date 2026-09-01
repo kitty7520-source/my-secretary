@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V62</title>
+<title>我的小秘書 V63</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -694,8 +694,26 @@ body.personalDark .drawerFooter{border-color:#3b3b3b}
 .personalHint{font-size:13px;opacity:.65;margin-bottom:10px}
 .personalFileBtn{display:inline-flex!important;align-items:center;justify-content:center;padding:10px 14px;border:1px solid rgba(127,127,127,.3);border-radius:10px;background:#f7f7f7;cursor:pointer}
 .personalFileBtn input{display:none!important}
-.personalBgPreviewWrap{width:100%;height:180px;margin-top:10px;border-radius:12px;overflow:hidden;background:#f1f1f1}
-.personalBgPreviewWrap img{width:100%;height:100%;object-fit:contain;display:block}
+.personalBgPreviewWrap{position:relative;width:100%;margin:10px auto;border:1px solid #b9a89d;border-radius:12px;overflow:hidden;background:#faf7f4;touch-action:none;cursor:grab}
+.personalBgPreviewWrap:active{cursor:grabbing}
+.personalBgPreviewStage{position:absolute;top:0;left:0;transform-origin:top left;overflow:hidden;background:#faf7f4}
+.personalBgLayer{position:absolute;inset:0;background-repeat:no-repeat;pointer-events:none}
+.personalBgPreviewContent{position:relative;pointer-events:none;user-select:none;max-width:520px;margin:auto;padding:10px}
+.personalBgPreviewContent .page{display:block!important}
+.personalBgPreviewContent .top{position:static!important}
+.personalBgPreviewContent.personalDark{color:#f2f2f2}
+.personalBgPreviewContent.personalDark .card,.personalBgPreviewContent.personalDark .homeCard,.personalBgPreviewContent.personalDark .recordBtn{background:#222!important;color:#f2f2f2!important}
+.personalBgSticky{position:sticky;top:-20px;z-index:2;background:#fff;padding:6px 0;border-bottom:1px solid #e7ddd7}
+.personalBgSticky b{font-size:14px}
+.personalBgControls input[type=range]{display:block;width:100%;min-height:36px;margin:3px 0;accent-color:#795747}
+.personalBgControls label{font-size:14px}
+.personalBgControls output{float:right;font-variant-numeric:tabular-nums}
+.personalBgControls select{min-height:40px;font-size:16px}
+.personalBtns{flex-wrap:wrap}
+.personalBtns button{min-height:44px;padding:8px 12px}
+.personalBgStatus{font-size:13px;color:#725545;margin:6px 0}
+#personalWallpaper{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.app{position:relative;z-index:1}
 .personalBtns{display:flex;gap:8px;margin-top:10px}
 .personalCheck{display:flex!important;align-items:center;gap:7px}
 .personalCheck input{width:auto!important}
@@ -1490,10 +1508,11 @@ function editCurrent(){
 renderHome();ui();
 
 const PERSONAL_KEY="secretaryV8PersonalSettings";
-let personalBgDraft="";
+let personalBgDraft="",personalBgEdits=null,personalBgDirty=false,personalBgRequest=0,personalBgDrag=null,personalBgEditingTarget="home";
+const personalBgImageCache=new Map();
 
 function defaultPersonalSettings(){
- return {bg:"",backgrounds:{home:"",work:"",store:"",trade:"",activity:""},bgSize:"cover",bgPosition:"center center",theme:"light",fontSize:"normal",showAllData:true,showReminders:true,compactReminders:false,reminderDays:{work:1,store:0,trade:14,activity:14}};
+ return {bg:"",backgrounds:{home:"",work:"",store:"",trade:"",activity:""},backgroundStyles:{},bgSize:"cover",bgPosition:"center center",theme:"light",fontSize:"normal",showAllData:true,showReminders:true,compactReminders:false,reminderDays:{work:1,store:0,trade:14,activity:14}};
 }
 function normalizeReminderDays(raw){
  let defaults={work:1,store:0,trade:14,activity:14},out={};
@@ -1574,10 +1593,8 @@ function openReminderSettings(){
 function openPersonalSettings(){
  closeSideDrawer();
  let s=getPersonalSettings();
- personalBgDraft="";
+ personalBgDraft="";personalBgDirty=false;
  if($("#personalBgTarget"))$("#personalBgTarget").value="home";
- if($("#personalBgSize"))$("#personalBgSize").value=s.bgSize;
- if($("#personalBgPosition"))$("#personalBgPosition").value=s.bgPosition;
  if($("#personalTheme"))$("#personalTheme").value=s.theme;
  if($("#personalFontSize"))$("#personalFontSize").value=s.fontSize;
  if($("#personalShowAllData"))$("#personalShowAllData").checked=s.showAllData!==false;
@@ -1586,12 +1603,13 @@ function openPersonalSettings(){
  let reminderDays=normalizeReminderDays(s.reminderDays);
  Object.entries({personalWorkDays:"work",personalStoreDays:"store",personalTradeDays:"trade",personalActivityDays:"activity"}).forEach(([id,key])=>{if($("#"+id))$("#"+id).value=reminderDays[key]});
 
- refreshPersonalBgPreview();
  $("#personalSettingsModal")?.classList.remove("hidden");
+ refreshPersonalBgPreview();
 }
 function closePersonalSettings(){
+ if(personalBgDirty&&!confirm("背景調整尚未套用，確定放棄這次調整？"))return;
  $("#personalSettingsModal")?.classList.add("hidden");
- personalBgDraft="";
+ personalBgDraft="";personalBgDirty=false;personalBgRequest++;
 }
 
 function compressBackgroundFile(file,callback){
@@ -1617,62 +1635,143 @@ function compressBackgroundFile(file,callback){
 
 function previewPersonalBg(ev){
  let f=ev.target.files&&ev.target.files[0];if(!f)return;
+ const request=++personalBgRequest,target=personalBgTarget();
  compressBackgroundFile(f,function(data){
+   if(request!==personalBgRequest||target!==personalBgTarget())return;
    personalBgDraft=data;
-   let img=$("#personalBgPreview"),wrap=$("#personalBgPreviewWrap"),btn=$("#personalApplyBgBtn");
-   if(img)img.src=data;
-   wrap?.classList.remove("hidden");
-   btn?.classList.remove("hidden");
+   personalBgEdits=normalizeBackgroundStyle({});
+   personalBgDirty=true;syncBackgroundControls();renderPersonalBgPreview();
  });
 }
 function personalBgTarget(){return $("#personalBgTarget")?.value||"home"}
 function refreshPersonalBgPreview(){
- personalBgDraft="";
- let s=getPersonalSettings(),data=s.backgrounds?.[personalBgTarget()]||"";
- let wrap=$("#personalBgPreviewWrap"),img=$("#personalBgPreview"),btn=$("#personalApplyBgBtn");
+ if(personalBgDirty&&!confirm("背景調整尚未套用，確定放棄並切換頁面？")){$("#personalBgTarget").value=personalBgEditingTarget;return}
+ personalBgRequest++;personalBgDirty=false;personalBgDraft="";personalBgEditingTarget=personalBgTarget();
+ let s=getPersonalSettings();
+ personalBgEdits=backgroundStyleFor(s,personalBgTarget());
  if($("#personalBgFile"))$("#personalBgFile").value="";
- if(data){if(img)img.src=data;wrap?.classList.remove("hidden")}
- else{if(img)img.removeAttribute("src");wrap?.classList.add("hidden")}
- btn?.classList.add("hidden");
+ syncBackgroundControls();buildBackgroundPreviewContent();renderPersonalBgPreview();
 }
 function applyPreviewBackground(){
- if(!personalBgDraft)return;
+ if(!personalBgDirty)return;
  let s=getPersonalSettings();
- let target=personalBgTarget(),old=s.backgrounds[target];
- s.backgrounds[target]=personalBgDraft;
- if(!setPersonalSettingsSafe(s)){
-   s.backgrounds[target]=old;
-   return;
- }
- personalBgDraft="";
- $("#personalApplyBgBtn")?.classList.add("hidden");
- applyPersonalSettings();
+ let target=personalBgTarget();
+ if(personalBgDraft)s.backgrounds[target]=personalBgDraft;
+ s.backgroundStyles=Object.assign({},s.backgroundStyles,{[target]:normalizeBackgroundStyle(personalBgEdits)});
+ if(!setPersonalSettingsSafe(s))return;
+ personalBgDraft="";personalBgDirty=false;
+ applyPersonalSettings();renderPersonalBgPreview();
 }
 function clearPersonalBg(){
+ if(!confirm("移除此頁面的背景圖片？不會刪除任何紀錄。"))return;
  let s=getPersonalSettings();s.backgrounds[personalBgTarget()]="";
- setPersonalSettingsSafe(s);
- personalBgDraft="";
- if($("#personalBgFile"))$("#personalBgFile").value="";
- if($("#personalBgPreview"))$("#personalBgPreview").removeAttribute("src");
- $("#personalBgPreviewWrap")?.classList.add("hidden");
- $("#personalApplyBgBtn")?.classList.add("hidden");
- applyPersonalSettings();
+ if(s.backgroundStyles)delete s.backgroundStyles[personalBgTarget()];
+ if(!setPersonalSettingsSafe(s))return;
+ personalBgDirty=false;refreshPersonalBgPreview();applyPersonalSettings();
+}
+function normalizeBackgroundStyle(raw){
+ raw=raw||{};
+ const number=(key,fallback,min,max)=>{const n=Number(raw[key]);return raw[key]!==null&&raw[key]!==""&&Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback};
+ return {size:["cover","contain","auto"].includes(raw.size)?raw.size:"cover",zoom:number("zoom",100,50,300),x:number("x",50,0,100),y:number("y",50,0,100),transparency:number("transparency",0,0,100)};
+}
+function backgroundStyleFor(s,target){
+ const positions={"center center":[50,50],"center top":[50,0],"center bottom":[50,100],"left center":[0,50],"right center":[100,50]};
+ const p=positions[s.bgPosition]||[50,50];
+ return normalizeBackgroundStyle(s.backgroundStyles?.[target]||{size:s.bgSize,x:p[0],y:p[1]});
+}
+function backgroundGeometry(w,h,iw,ih,style){
+ const base=style.size==="contain"?Math.min(w/iw,h/ih):style.size==="auto"?1:Math.max(w/iw,h/ih);
+ const width=iw*base*style.zoom/100,height=ih*base*style.zoom/100;
+ return {width,height,left:(w-width)*style.x/100,top:(h-height)*style.y/100};
+}
+function paintBackground(layer,data,style,w,h){
+ if(!layer)return;
+ const token={};layer.paintToken=token;
+ layer.style.backgroundImage="";layer.style.opacity=String(1-style.transparency/100);layer.bgGeometry=null;
+ if(!data)return;
+ let pending=personalBgImageCache.get(data);
+ if(!pending){
+   pending=new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>reject(new Error("image"));img.src=data});
+   if(personalBgImageCache.size>8)personalBgImageCache.clear();
+   personalBgImageCache.set(data,pending);
+ }
+ pending.then(img=>{
+   if(layer.paintToken!==token)return;
+   const g=backgroundGeometry(w,h,img.naturalWidth||img.width,img.naturalHeight||img.height,style);
+   layer.style.backgroundImage='url("'+data+'")';layer.style.backgroundSize=g.width+"px "+g.height+"px";layer.style.backgroundPosition=g.left+"px "+g.top+"px";
+   layer.bgGeometry=g;
+ }).catch(()=>{if(layer.paintToken===token&&layer.id==="personalBgPreview")$("#personalBgStatus").textContent="圖片無法顯示，請重新選擇圖片。"});
+}
+function syncBackgroundControls(){
+ const s=personalBgEdits||normalizeBackgroundStyle({});
+ $("#personalBgSize").value=s.size;
+ for(const [key,id] of Object.entries({zoom:"personalBgZoom",x:"personalBgX",y:"personalBgY",transparency:"personalBgTransparency"})){
+   $("#"+id).value=s[key];$("#"+id+"Value").textContent=Math.round(s[key])+"%";
+ }
+}
+function updateBackgroundDraft(){
+ personalBgEdits=normalizeBackgroundStyle({size:$("#personalBgSize").value,zoom:$("#personalBgZoom").value,x:$("#personalBgX").value,y:$("#personalBgY").value,transparency:$("#personalBgTransparency").value});
+ personalBgDirty=true;syncBackgroundControls();renderPersonalBgPreview();
+}
+function resetBackgroundCrop(){
+ personalBgEdits=normalizeBackgroundStyle({});personalBgDirty=true;syncBackgroundControls();renderPersonalBgPreview();
+}
+function buildBackgroundPreviewContent(){
+ const box=$("#personalBgPreviewContent"),target=personalBgTarget(),s=getPersonalSettings();
+ box.replaceChildren();
+ if(target==="home"){
+   const clone=$("#home").cloneNode(true);
+   [clone,...clone.querySelectorAll("*")].forEach(el=>{
+     [...el.attributes].forEach(a=>{if(a.name==="id"||a.name.startsWith("on")||a.name==="autofocus")el.removeAttribute(a.name)});
+     if(el.matches("button,input,select,textarea"))el.disabled=true;
+     if(el.matches("a"))el.removeAttribute("href");
+   });box.appendChild(clone);
+ }else{
+   const category={work:"工作",store:"店務",trade:"交易",activity:"活動"}[target];
+   const list=records.filter(r=>r.main===category||(category==="交易"&&r.main==="面交"));
+   box.innerHTML='<div class="top"><span>‹</span><h1>'+esc(category)+'</h1><span></span></div>'+list.map(r=>'<div class="recordBtn"><b>'+esc(r.title||r.vendor||r.employeeName||"未命名")+'</b><span class="muted">'+[r.sub,r.date,r.time].filter(Boolean).map(esc).join(" · ")+'</span></div>').join("");
+   if(!list.length)box.innerHTML+='<div class="homeCard muted">目前沒有紀錄</div>';
+ }
+ box.classList.toggle("personalDark",s.theme==="dark"||(s.theme==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches));
+}
+function renderPersonalBgPreview(){
+ const wrap=$("#personalBgPreviewWrap"),stage=$("#personalBgPreviewStage");if(!wrap||!stage)return;
+ const s=getPersonalSettings(),data=personalBgDraft||s.backgrounds[personalBgTarget()]||"";
+ const w=window.innerWidth,h=window.innerHeight,maxWidth=wrap.parentElement.clientWidth||300,scale=Math.min(maxWidth/w,Math.min(250,h*.3)/h);
+ wrap.style.width=w*scale+"px";wrap.style.height=h*scale+"px";
+ stage.style.width=w+"px";stage.style.height=h+"px";stage.style.transform="scale("+scale+")";
+ stage.style.backgroundColor=(s.theme==="dark"||(s.theme==="system"&&window.matchMedia("(prefers-color-scheme: dark)").matches))?"#151515":"#faf7f4";
+ paintBackground($("#personalBgPreview"),data,personalBgEdits||backgroundStyleFor(s,personalBgTarget()),w,h);
+ $("#personalBgStatus").textContent=personalBgDirty?"尚未套用 · 調整後按「套用背景」儲存":data?"目前已儲存的背景 · 可直接調整":"尚未選擇背景圖片";
+ $("#personalApplyBgBtn").disabled=!personalBgDirty;
+}
+function startBackgroundDrag(ev){
+ if(ev.button!==0)return;
+ const wrap=ev.currentTarget,g=$("#personalBgPreview").bgGeometry;
+ if(!g)return;
+ personalBgDrag={pointerId:ev.pointerId,x:ev.clientX,y:ev.clientY,style:{...personalBgEdits},g,scale:wrap.clientWidth/window.innerWidth};
+ wrap.setPointerCapture(ev.pointerId);
+}
+function moveBackgroundDrag(ev){
+ const d=personalBgDrag;if(!d||ev.pointerId!==d.pointerId)return;
+ const dx=window.innerWidth-d.g.width,dy=window.innerHeight-d.g.height;
+ personalBgEdits=normalizeBackgroundStyle({...d.style,x:Math.abs(dx)>1?d.style.x+(ev.clientX-d.x)/d.scale/dx*100:d.style.x,y:Math.abs(dy)>1?d.style.y+(ev.clientY-d.y)/d.scale/dy*100:d.style.y});
+ personalBgDirty=true;syncBackgroundControls();renderPersonalBgPreview();
 }
 function savePersonalSettings(){
  let s=getPersonalSettings();
- if($("#personalBgSize"))s.bgSize=$("#personalBgSize").value;
- if($("#personalBgPosition"))s.bgPosition=$("#personalBgPosition").value;
  if($("#personalTheme"))s.theme=$("#personalTheme").value;
  if($("#personalFontSize"))s.fontSize=$("#personalFontSize").value;
  if($("#personalShowAllData"))s.showAllData=$("#personalShowAllData").checked;
  if($("#personalShowReminders"))s.showReminders=$("#personalShowReminders").checked;
  if($("#personalCompactReminders"))s.compactReminders=$("#personalCompactReminders").checked;
  s.reminderDays=normalizeReminderDays({work:$("#personalWorkDays")?.value,store:$("#personalStoreDays")?.value,trade:$("#personalTradeDays")?.value,activity:$("#personalActivityDays")?.value});
- if(setPersonalSettingsSafe(s)){applyPersonalSettings();renderHome()}
+ if(setPersonalSettingsSafe(s)){applyPersonalSettings();renderHome();buildBackgroundPreviewContent();renderPersonalBgPreview()}
 }
 function resetPersonalSettings(){
- setPersonalSettingsSafe(defaultPersonalSettings());
- personalBgDraft="";
+ if(!confirm("恢復所有個人化設定？背景圖片與調整會移除，紀錄不受影響。"))return;
+ if(!setPersonalSettingsSafe(defaultPersonalSettings()))return;
+ personalBgDraft="";personalBgDirty=false;
  applyPersonalSettings();
  openPersonalSettings();
 }
@@ -1687,15 +1786,10 @@ function applyPersonalSettings(){
  let activeBg=target?(s.backgrounds?.[target]||""):"";
  document.body.classList.toggle("hasPersonalBg",!!activeBg);
 
- if(activeBg){
-   document.body.style.backgroundImage='url("'+activeBg+'")';
-   document.body.style.backgroundSize=s.bgSize||"cover";
-   document.body.style.backgroundPosition=s.bgPosition||"center center";
- }else{
-   document.body.style.backgroundImage="";
-   document.body.style.backgroundSize="";
-   document.body.style.backgroundPosition="";
- }
+ document.body.style.backgroundImage="";document.body.style.backgroundSize="";document.body.style.backgroundPosition="";
+ let wallpaper=$("#personalWallpaper");
+ if(!wallpaper){wallpaper=document.createElement("div");wallpaper.id="personalWallpaper";wallpaper.setAttribute("aria-hidden","true");wallpaper.innerHTML='<div class="personalBgLayer"></div>';document.body.prepend(wallpaper)}
+ paintBackground(wallpaper.firstElementChild,activeBg,backgroundStyleFor(s,target),window.innerWidth,window.innerHeight);
 
  let home=$("#home");
  if(home){
@@ -1709,6 +1803,7 @@ function applyPersonalSettings(){
 }
 
 document.addEventListener("DOMContentLoaded",applyPersonalSettings);
+window.addEventListener("resize",()=>{applyPersonalSettings();if(!$("#personalSettingsModal")?.classList.contains("hidden"))renderPersonalBgPreview()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();closePersonalSettings()}});
 </script>
 <div id="drawerShell" class="drawerShell hidden" aria-hidden="true">
@@ -1744,7 +1839,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
       </div>
     </div>
   </div>
-  <div class="drawerFooter">我的小秘書 V62</div>
+  <div class="drawerFooter">我的小秘書 V63</div>
 </aside>
 </div>
 
@@ -1757,7 +1852,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
 
     <div class="personalSection">
       <b>背景圖片</b>
-      <div class="personalHint">五個頁面可分別設定不同圖片；選擇後會先預覽，不會立即套用。</div>
+      <div class="personalHint">五個頁面的圖片、裁切、縮放及透明度各自儲存。預覽框就是螢幕可見範圍，框外部分會裁掉，原圖仍保留。</div>
       <label>套用頁面
         <select id="personalBgTarget" onchange="refreshPersonalBgPreview()">
           <option value="home">首頁</option>
@@ -1773,32 +1868,41 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
         <input id="personalBgFile" type="file" accept="image/*" onchange="previewPersonalBg(event)">
       </label>
 
-      <div id="personalBgPreviewWrap" class="personalBgPreviewWrap hidden">
-        <img id="personalBgPreview" alt="背景預覽">
+      <div class="personalBgSticky">
+        <b>即時預覽 · 拖曳圖片調整裁切位置</b>
+        <div id="personalBgPreviewWrap" class="personalBgPreviewWrap" role="img" aria-label="背景套用後預覽，可拖曳調整位置，或使用下方位置滑桿" onpointerdown="startBackgroundDrag(event)" onpointermove="moveBackgroundDrag(event)" onpointerup="personalBgDrag=null" onpointercancel="personalBgDrag=null" onlostpointercapture="personalBgDrag=null">
+          <div id="personalBgPreviewStage" class="personalBgPreviewStage">
+            <div id="personalBgPreview" class="personalBgLayer"></div>
+            <div id="personalBgPreviewContent" class="personalBgPreviewContent" inert aria-hidden="true"></div>
+          </div>
+        </div>
+        <div id="personalBgStatus" class="personalBgStatus" role="status"></div>
+        <div class="personalBtns">
+          <button type="button" id="personalApplyBgBtn" class="btn" onclick="applyPreviewBackground()">套用背景</button>
+          <button type="button" class="red" onclick="clearPersonalBg()">移除背景</button>
+        </div>
       </div>
 
-      <div class="personalBtns">
-        <button id="personalApplyBgBtn" class="primary hidden" onclick="applyPreviewBackground()">套用背景</button>
-        <button class="secondary" onclick="clearPersonalBg()">移除背景</button>
-      </div>
-
-      <label>圖片大小
-        <select id="personalBgSize" onchange="savePersonalSettings()">
+      <div class="personalBgControls">
+      <label>圖片顯示方式
+        <select id="personalBgSize" onchange="updateBackgroundDraft()">
           <option value="cover">填滿畫面</option>
           <option value="contain">完整顯示</option>
           <option value="auto">原始大小</option>
         </select>
       </label>
 
-      <label>圖片位置
-        <select id="personalBgPosition" onchange="savePersonalSettings()">
-          <option value="center center">置中</option>
-          <option value="center top">上方</option>
-          <option value="center bottom">下方</option>
-          <option value="left center">靠左</option>
-          <option value="right center">靠右</option>
-        </select>
-      </label>
+      <label for="personalBgZoom">縮小／放大 <output id="personalBgZoomValue">100%</output></label>
+      <input id="personalBgZoom" type="range" min="50" max="300" step="1" value="100" oninput="updateBackgroundDraft()">
+      <label for="personalBgX">左右裁切位置 <output id="personalBgXValue">50%</output></label>
+      <input id="personalBgX" type="range" min="0" max="100" step="1" value="50" oninput="updateBackgroundDraft()">
+      <label for="personalBgY">上下裁切位置 <output id="personalBgYValue">50%</output></label>
+      <input id="personalBgY" type="range" min="0" max="100" step="1" value="50" oninput="updateBackgroundDraft()">
+      <label for="personalBgTransparency">背景透明度 <output id="personalBgTransparencyValue">0%</output></label>
+      <input id="personalBgTransparency" type="range" min="0" max="100" step="1" value="0" oninput="updateBackgroundDraft()">
+      <div class="personalHint">0% 為原圖，100% 為完全透明；不影響文字與按鈕。放大後可拖曳裁切，縮小可保留更多畫面。</div>
+      <button type="button" class="red" onclick="resetBackgroundCrop()">重設裁切、縮放與透明度</button>
+      </div>
     </div>
 
     <div class="personalSection">
