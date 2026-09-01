@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V68</title>
+<title>我的小秘書 V69</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -831,7 +831,7 @@ body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperConten
 <section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><div class="detailTopNav"><button id="prevRecordBtn" class="detailNavBtn" onclick="moveDetail(-1)">‹</button><h1>紀錄明細</h1><button id="nextRecordBtn" class="detailNavBtn" onclick="moveDetail(1)">›</button></div><span></span></div><div class="detailActions"><button type="button" class="btn" onclick="editCurrent()">修改</button><button type="button" class="red" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></div><div id="detailBody"></div><button type="button" class="red wide detailDeleteBottom" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
 
 <section id="form" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1>新增</h1><button class="btn" onclick="save()">儲存</button></div>
-<div style="margin:12px 0"><label style="display:flex;align-items:center;gap:8px;min-height:44px"><input id="addGoogleCalendar" type="checkbox" style="width:22px;height:22px;flex:none" aria-describedby="googleCalendarHelp">加入 Google 行事曆</label><div id="googleCalendarHelp" class="muted" style="font-size:14px;line-height:1.5">勾選後儲存，帶入這筆資料的標題、日期時間、地點與備註；請在 Google 行事曆確認儲存。無時間為全天，有時間預設 1 小時（台灣時間），可再修改。每次勾選會建立新行程，不會同步後續修改或刪除。</div></div>
+<div style="margin:12px 0"><label style="display:flex;align-items:center;gap:8px;min-height:44px"><input id="addGoogleCalendar" type="checkbox" style="width:22px;height:22px;flex:none">加入 Google 行事曆</label></div>
 <div class="label">分類</div><div class="cat"><div class="field"><select id="main" onchange="ui()"><option>工作</option><option>店務</option><option>交易</option><option>活動</option></select></div><i></i><div id="subbox" class="field"><select id="sub" onchange="ui()"></select></div><i></i><div id="third" class="categoryTail"><div id="vendorField" class="field"><input id="vendor" placeholder="廠商名稱"></div><a id="formMoneyLink" class="formMoneyLink hidden" href="https://kitty7520-source.github.io/Money/" target="_blank" rel="noopener">💰 記帳</a></div></div>
 
 <div id="eventDateBox" class="hidden"></div><input id="eventTime" type="time" class="hidden">
@@ -1991,7 +1991,7 @@ function readTransferState(){
  transferAssert(Array.isArray(saved),"本機紀錄無法讀取，請先保留原檔，不要匯入。");
  return {raw,records:saved.map(r=>r.main==="面交"?{...r,main:"交易"}:r),ticketSystems:raw[SYSKEY]===null?systems:JSON.parse(raw[SYSKEY]),personalSettings:raw[PERSONAL_KEY]===null?defaultPersonalSettings():JSON.parse(raw[PERSONAL_KEY]),homeDismissed:raw[HOMEDISMISSKEY]===null?{}:JSON.parse(raw[HOMEDISMISSKEY])};
 }
-function makeSecretaryBackup(local){return {format:TRANSFER_FORMAT,formatVersion:1,appVersion:"V68",exportedAt:new Date().toISOString(),records:local.records,personalSettings:local.personalSettings,ticketSystems:local.ticketSystems,homeDismissed:local.homeDismissed}}
+function makeSecretaryBackup(local){return {format:TRANSFER_FORMAT,formatVersion:1,appVersion:"V69",exportedAt:new Date().toISOString(),records:local.records,personalSettings:local.personalSettings,ticketSystems:local.ticketSystems,homeDismissed:local.homeDismissed}}
 function downloadSecretaryBundle(bundle,prefix="my-secretary-backup"){
  const blob=new Blob([JSON.stringify(bundle)],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
  const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=[now.getFullYear(),pad(now.getMonth()+1),pad(now.getDate())].join("")+"-"+[pad(now.getHours()),pad(now.getMinutes()),pad(now.getSeconds())].join("");
@@ -2154,7 +2154,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#transferMod
       </div>
     </div>
   </div>
-  <div class="drawerFooter">我的小秘書 V68</div>
+  <div class="drawerFooter">我的小秘書 V69</div>
 </aside>
 </div>
 
