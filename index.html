@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V67</title>
+<title>我的小秘書 V68</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -823,6 +823,7 @@ body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperConten
 </style></head><body><div class="app">
 <section id="home" class="page on"><div class="top"><button type="button" class="menuBtn" aria-label="開啟選單" aria-controls="sideDrawer" aria-expanded="false" onclick="openSideDrawer(event)"><span></span><span></span><span></span></button><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <div class="homeCard"><b>全部資料</b><div class="tiles storeHomeTiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('店務')">🏪<br>店務</button><button class="tile" onclick="openCategory('交易')">👥<br>交易</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div>
+<div id="calendarNotice" class="hidden" role="status" style="margin:12px 0;line-height:1.6"><span id="calendarNoticeText"></span> <a id="calendarRetry" target="_blank" rel="noopener noreferrer">開啟 Google 行事曆</a> <button type="button" class="btn" onclick="this.parentElement.classList.add('hidden')">關閉提示</button></div>
 <b>🔔 今日／近期提醒</b><div id="reminders"></div></section>
 
 <section id="category" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1 id="catTitle">全部資料</h1><span></span></div><div id="catTabs" class="tiles"></div><div id="catList"></div></section>
@@ -830,6 +831,7 @@ body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperConten
 <section id="detail" class="page"><div class="top"><button class="back" onclick="backToCategory()">‹</button><div class="detailTopNav"><button id="prevRecordBtn" class="detailNavBtn" onclick="moveDetail(-1)">‹</button><h1>紀錄明細</h1><button id="nextRecordBtn" class="detailNavBtn" onclick="moveDetail(1)">›</button></div><span></span></div><div class="detailActions"><button type="button" class="btn" onclick="editCurrent()">修改</button><button type="button" class="red" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></div><div id="detailBody"></div><button type="button" class="red wide detailDeleteBottom" onclick="deleteCurrentRecord()">刪除這筆紀錄</button></section>
 
 <section id="form" class="page"><div class="top"><button class="back" onclick="show('home')">‹</button><h1>新增</h1><button class="btn" onclick="save()">儲存</button></div>
+<div style="margin:12px 0"><label style="display:flex;align-items:center;gap:8px;min-height:44px"><input id="addGoogleCalendar" type="checkbox" style="width:22px;height:22px;flex:none" aria-describedby="googleCalendarHelp">加入 Google 行事曆</label><div id="googleCalendarHelp" class="muted" style="font-size:14px;line-height:1.5">勾選後儲存，帶入這筆資料的標題、日期時間、地點與備註；請在 Google 行事曆確認儲存。無時間為全天，有時間預設 1 小時（台灣時間），可再修改。每次勾選會建立新行程，不會同步後續修改或刪除。</div></div>
 <div class="label">分類</div><div class="cat"><div class="field"><select id="main" onchange="ui()"><option>工作</option><option>店務</option><option>交易</option><option>活動</option></select></div><i></i><div id="subbox" class="field"><select id="sub" onchange="ui()"></select></div><i></i><div id="third" class="categoryTail"><div id="vendorField" class="field"><input id="vendor" placeholder="廠商名稱"></div><a id="formMoneyLink" class="formMoneyLink hidden" href="https://kitty7520-source.github.io/Money/" target="_blank" rel="noopener">💰 記帳</a></div></div>
 
 <div id="eventDateBox" class="hidden"></div><input id="eventTime" type="time" class="hidden">
@@ -1138,20 +1140,45 @@ $("#camera").onchange=e=>pickFiles(e.target.files);$("#files").onchange=e=>pickF
 function renderPhotos(){$("#count").textContent=photos.length+" 張";$("#thumbs").innerHTML=photos.map((p,i)=>`<img class="thumb" src="${p.data}" onclick="togglePreview(${i})">`).join("");if(previewIndex>=photos.length){previewIndex=-1;$("#preview").style.display="none"}}
 function togglePreview(i){if(previewIndex===i){previewIndex=-1;$("#preview").style.display="none"}else{previewIndex=i;$("#previewImg").src=photos[i].data;$("#preview").style.display="block"}}
 function deleteCurrentPhoto(){if(previewIndex<0)return;photos.splice(previewIndex,1);previewIndex=-1;$("#preview").style.display="none";renderPhotos()}
-function openAdd(){editingId=null;resetStoreForms();sales=[{date:"",time:"",type:"公售",related:""}];tradeItems=[];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["location","title","memo","vendor","eventName","eventLocation","tradeLocation","tradeTitle","tradeContact","tradeMemo","otherActivityLocation","otherActivityTitle","otherActivityMemo"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});["tradeBuy","tradeSell","tradeSwap"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#tradeDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=nowTime;$("#otherActivityDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#otherActivityTime").value=nowTime;$("#del30").checked=false;["orderMorning","orderNoon","orderEvening"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});ui();updateMainDTButtons();renderTradeItems();renderPhotos();if($("#orderRepeat"))$("#orderRepeat").checked=false;if($("#orderRepeatEvery"))$("#orderRepeatEvery").value="1";if($("#orderRepeatUnit"))$("#orderRepeatUnit").value="day";toggleOrderRepeat();show("form")}
+function openAdd(){$("#addGoogleCalendar").checked=false;editingId=null;resetStoreForms();sales=[{date:"",time:"",type:"公售",related:""}];tradeItems=[];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["location","title","memo","vendor","eventName","eventLocation","tradeLocation","tradeTitle","tradeContact","tradeMemo","otherActivityLocation","otherActivityTitle","otherActivityMemo"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});["tradeBuy","tradeSell","tradeSwap"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#tradeDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=nowTime;$("#otherActivityDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#otherActivityTime").value=nowTime;$("#del30").checked=false;["orderMorning","orderNoon","orderEvening"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});ui();updateMainDTButtons();renderTradeItems();renderPhotos();if($("#orderRepeat"))$("#orderRepeat").checked=false;if($("#orderRepeatEvery"))$("#orderRepeatEvery").value="1";if($("#orderRepeatUnit"))$("#orderRepeatUnit").value="day";toggleOrderRepeat();show("form")}
 function cleanup(){let now=Date.now(),changed=false;records.forEach(r=>{if(r.delete30&&r.photos){let n=r.photos.filter(p=>now-p.at<2592000000);if(n.length!==r.photos.length){r.photos=n;changed=true}}});if(changed)localStorage.setItem(DATAKEY,JSON.stringify(records))}
+// V68: prepare one event for the user's confirmation; never mark it as synced.
+function googleCalendarURL(rec){
+ const date=String(rec.date||""),time=String(rec.time||"");
+ const day=new Date(date+"T00:00:00Z");
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(day.getTime())||day.toISOString().slice(0,10)!==date)throw new Error("加入 Google 行事曆前，請先填寫這筆資料的有效日期；若暫不加入，可取消勾選後儲存。");
+ if(time&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))throw new Error("請先填寫有效時間，或清空時間以建立全天行程。");
+ const compact=d=>d.toISOString().slice(0,19).replace(/[-:]/g,"");
+ let dates;
+ if(time){
+   const start=new Date(date+"T"+time+":00Z");
+   dates=compact(start)+"/"+compact(new Date(start.getTime()+3600000));
+ }else dates=date.replace(/-/g,"")+"/"+new Date(day.getTime()+86400000).toISOString().slice(0,10).replace(/-/g,"");
+ const category=[rec.main,rec.sub].filter(Boolean).join("／");
+ const title=rec.main==="工作"&&rec.sub==="下單"?[rec.vendor,rec.title].filter(Boolean).join("－"):(rec.title||rec.vendor||rec.employeeName);
+ const lines=["我的小秘書｜"+category];
+ const add=(label,value)=>{if(value)lines.push(label+"："+value)};
+ add("廠商",rec.vendor);add("備註",rec.memo);add("時段",(rec.orderDayparts||[]).join("／"));
+ add("處理類型",(rec.storeTypes||[]).join("／"));add("單號",rec.orderNumber);add("訂單行",rec.orderLine);add("帳期",rec.accountPeriod);
+ if(rec.orderRepeat)add("重複下單","此行程僅加入所選日期，如需重複請在 Google 行事曆設定");
+ const params=new URLSearchParams({action:"TEMPLATE",text:title||category||"我的小秘書",dates,ctz:"Asia/Taipei",location:rec.location||"",details:lines.join("\n")});
+ return "https://calendar.google.com/calendar/render?"+params.toString();
+}
+function offerGoogleCalendar(url){
+ $("#calendarNotice").classList.toggle("hidden",!url);
+ if(!url){$("#calendarRetry").removeAttribute("href");return}
+ $("#calendarRetry").href=url;
+ $("#calendarNoticeText").textContent="小秘書已儲存，Google 行事曆仍需你確認儲存。若未開啟，請點下方連結；已加入者請勿重複儲存。";
+ // Synchronous with the Save click so browsers can allow the new tab.
+ try{window.open(url,"_blank","noopener,noreferrer")}catch(e){/* The visible link remains available. */}
+}
 function save(){
  let m=$("#main").value,s=$("#sub").value;
  let concert=m==="活動"&&s==="演唱會",order=m==="工作"&&s==="下單",trade=m==="交易";
  let rec={id:editingId||Date.now(),main:m,sub:trade?"":s,vendor:$("#vendor").value,photos,delete30:$("#del30").checked};
  if(m==="店務"){
    let data=readStoreRecord(s);if(!data)return;
-   let previous=records.find(x=>x.id===editingId);
-   Object.assign(rec,data,{completed:!!previous?.completed,completedAt:previous?.completedAt||null});
-   let updated=editingId?records.map(x=>x.id===editingId?rec:x):[rec,...records];
-   try{localStorage.setItem(DATAKEY,JSON.stringify(updated))}
-   catch(e){alert("儲存失敗，請先保留輸入內容並檢查裝置儲存空間。");return}
-   records=updated;editingId=null;renderHome();show("home");return;
+   Object.assign(rec,data);
  }else if(concert){
    let pickup={};$("#pickupBody").querySelectorAll("[data-key]").forEach(e=>pickup[e.dataset.key]=e.value);
    Object.assign(rec,{title:$("#eventName").value,date:$("#eventDateBox input").value,time:$("#eventTime").value,location:$("#eventLocation").value,ticketSystem:$("#ticketSystem").value,sales:JSON.parse(JSON.stringify(sales)),pickup,pickupMethod:$("#pickupMethod")?.value||""});
@@ -1168,8 +1195,14 @@ function save(){
  }else{
    Object.assign(rec,{title:$("#title").value,date:$("#genericDateBox input").value,time:$("#time").value,location:$("#location").value,memo:$("#memo").value});
  }
- if(editingId){let idx=records.findIndex(x=>x.id===editingId);if(idx>=0)records[idx]=rec}else records.unshift(rec);
- editingId=null;localStorage.setItem(DATAKEY,JSON.stringify(records));renderHome();show("home")
+ let calendarURL="";
+ if($("#addGoogleCalendar").checked){try{calendarURL=googleCalendarURL(rec)}catch(e){alert(e.message);return}}
+ const previous=records.find(x=>x.id===editingId);
+ if(previous)Object.assign(rec,{completed:!!previous.completed,completedAt:previous.completedAt||null});
+ const updated=editingId?records.map(x=>x.id===editingId?rec:x):[rec,...records];
+ try{localStorage.setItem(DATAKEY,JSON.stringify(updated))}
+ catch(e){alert("儲存失敗，請先保留輸入內容並檢查裝置儲存空間。");return}
+ records=updated;editingId=null;$("#addGoogleCalendar").checked=false;renderHome();show("home");offerGoogleCalendar(calendarURL)
 }
 const HOMEDISMISSKEY="secretaryV8HomeDismissed";
 function getHomeDismissed(){try{return JSON.parse(localStorage.getItem(HOMEDISMISSKEY)||"{}")}catch(e){return {}}}
@@ -1464,6 +1497,7 @@ function editCurrent(){
  let r=records.find(x=>String(x.id)===String(currentRecordId));
  if(!r){alert("找不到這筆紀錄，請返回清單後重新開啟");return}
 
+ $("#addGoogleCalendar").checked=false;
  editingId=r.id;
 
  let mainEl=$("#main");
@@ -1957,7 +1991,7 @@ function readTransferState(){
  transferAssert(Array.isArray(saved),"本機紀錄無法讀取，請先保留原檔，不要匯入。");
  return {raw,records:saved.map(r=>r.main==="面交"?{...r,main:"交易"}:r),ticketSystems:raw[SYSKEY]===null?systems:JSON.parse(raw[SYSKEY]),personalSettings:raw[PERSONAL_KEY]===null?defaultPersonalSettings():JSON.parse(raw[PERSONAL_KEY]),homeDismissed:raw[HOMEDISMISSKEY]===null?{}:JSON.parse(raw[HOMEDISMISSKEY])};
 }
-function makeSecretaryBackup(local){return {format:TRANSFER_FORMAT,formatVersion:1,appVersion:"V67",exportedAt:new Date().toISOString(),records:local.records,personalSettings:local.personalSettings,ticketSystems:local.ticketSystems,homeDismissed:local.homeDismissed}}
+function makeSecretaryBackup(local){return {format:TRANSFER_FORMAT,formatVersion:1,appVersion:"V68",exportedAt:new Date().toISOString(),records:local.records,personalSettings:local.personalSettings,ticketSystems:local.ticketSystems,homeDismissed:local.homeDismissed}}
 function downloadSecretaryBundle(bundle,prefix="my-secretary-backup"){
  const blob=new Blob([JSON.stringify(bundle)],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
  const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=[now.getFullYear(),pad(now.getMonth()+1),pad(now.getDate())].join("")+"-"+[pad(now.getHours()),pad(now.getMinutes()),pad(now.getSeconds())].join("");
@@ -2120,7 +2154,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#transferMod
       </div>
     </div>
   </div>
-  <div class="drawerFooter">我的小秘書 V67</div>
+  <div class="drawerFooter">我的小秘書 V68</div>
 </aside>
 </div>
 
