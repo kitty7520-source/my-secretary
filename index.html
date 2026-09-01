@@ -1,6 +1,6 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>我的小秘書 V63</title>
+<title>我的小秘書 V67</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#faf7f4;color:#392f2a;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif}
 .app{max-width:520px;margin:auto;padding:10px}.page{display:none}.page.on{display:block}
@@ -778,6 +778,48 @@ body.personalDark .reminderGroup .homeReminder{border-color:#45403d}
 .detailActions{display:flex;gap:10px;margin:8px 0 12px}
 .detailActions button{flex:1;min-width:0;min-height:44px}
 .detailDeleteBottom{min-height:44px;margin-bottom:16px}
+/* V64 可換桌布頁面及預覽：內容不再覆蓋底色或外框；編輯表單和側邊選單不變。 */
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent{color:#392f2a}
+body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperContent,
+#personalBgPreviewContent.wallpaperContent.personalDark{color:#f2f2f2}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent :is(.homeCard,.card,.reminderGroup,.homeReminder,.recordBtn,.tile,.subtab,button,.doneBox){
+ background:transparent!important;border:0!important;box-shadow:none!important;color:inherit!important;
+}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent :is(.muted,.label,.detailLabel){color:inherit!important}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent .subtab.active{font-weight:800;text-decoration:underline;text-underline-offset:5px}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent .doneBox.checked{font-weight:900}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent .doneBox:not(.checked){opacity:.55}
+/* V65 只恢復上方分類切換按鈕的外框與半透明底色，文字不透明化。 */
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent{
+ --wallpaperNavBg:rgba(255,255,255,.5);--wallpaperNavActiveBg:rgba(121,87,71,.5);--wallpaperNavBorder:#b49b8d;
+}
+body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperContent,
+#personalBgPreviewContent.wallpaperContent.personalDark{
+ --wallpaperNavBg:rgba(34,34,34,.5);--wallpaperNavActiveBg:rgba(163,126,104,.5);--wallpaperNavBorder:#bca798;
+}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent :is(.tile,.subtab){
+ background:var(--wallpaperNavBg)!important;border:1px solid var(--wallpaperNavBorder)!important;
+}
+:is(#home,#category,#personalBgPreviewContent).wallpaperContent .subtab.active{
+ background:var(--wallpaperNavActiveBg)!important;
+}
+.transferModal{position:fixed;inset:0;z-index:1000;background:#0006;display:flex;align-items:center;justify-content:center;padding:12px}
+.transferPanel{width:100%;max-width:560px;max-height:90vh;overflow:auto;background:#faf7f4;color:#392f2a;border-radius:16px;padding:16px}
+.transferPanel h2{font-size:20px;margin:0}
+.transferPanel p{font-size:14px;line-height:1.6}
+.transferActions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.transferActions button,.transferPanel select{min-height:44px;font-size:16px}
+.transferPanel button:disabled{opacity:.45}
+.transferSummary{padding:12px;border:1px solid #dbcbbf;border-radius:10px;background:#fff;line-height:1.8;margin:12px 0;overflow-wrap:anywhere}
+.transferConflict{border-top:1px solid #dbcbbf;padding:12px 0;overflow-wrap:anywhere}
+.transferConflict strong{display:block}
+.transferConflict p{margin:6px 0;white-space:pre-wrap}
+.transferConflict select{width:100%;padding:8px;background:#fff;border:1px solid #b49b8d;border-radius:8px}
+.transferCheck{display:flex;align-items:flex-start;gap:8px;font-size:14px;margin:12px 0;line-height:1.5}
+.transferCheck input{flex-shrink:0;width:20px;height:20px;margin-top:1px}
+.transferError{color:#a63429;white-space:pre-wrap;font-size:14px;line-height:1.5}
+.transferSuccess{color:#216643;white-space:pre-wrap;line-height:1.6}
+.transferFooter{position:sticky;bottom:-16px;background:#faf7f4;padding:10px 0;margin-top:10px;border-top:1px solid #dbcbbf}
 </style></head><body><div class="app">
 <section id="home" class="page on"><div class="top"><button type="button" class="menuBtn" aria-label="開啟選單" aria-controls="sideDrawer" aria-expanded="false" onclick="openSideDrawer(event)"><span></span><span></span><span></span></button><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <div class="homeCard"><b>全部資料</b><div class="tiles storeHomeTiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('店務')">🏪<br>店務</button><button class="tile" onclick="openCategory('交易')">👥<br>交易</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div>
@@ -1060,7 +1102,7 @@ function toggleOrderRepeat(){
  if(checked&&$("#orderRepeatEvery")&&!$("#orderRepeatEvery").value)$("#orderRepeatEvery").value="1";
 }
 function toggleSec(id,arrow){let e=$("#"+id),a=$("#"+arrow),hide=!e.classList.contains("hidden");e.classList.toggle("hidden",hide);a.textContent=hide?"›":"⌄"}
-function renderSystems(){let s=$("#ticketSystem"),v=s.value;s.innerHTML=systems.map(x=>`<option>${x.name}</option>`).join("");if(systems.some(x=>x.name===v))s.value=v;renderPickup()}
+function renderSystems(){let s=$("#ticketSystem"),v=s.value;s.innerHTML=systems.map(x=>`<option>${esc(x.name)}</option>`).join("");if(systems.some(x=>x.name===v))s.value=v;renderPickup()}
 function saleDTText(x){return [md(x.date),x.time].filter(Boolean).join(" ")||"日期時間"}
 function openSaleDT(i){saleDTIndex=i;$("#salePickDate").value=sales[i].date||"";$("#salePickTime").value=sales[i].time||"";$("#saleDTModal").style.display="block"}
 function closeSaleDT(){$("#saleDTModal").style.display="none";saleDTIndex=-1}
@@ -1070,17 +1112,17 @@ function renderSales(){let h=sales.map((x,i)=>`<div class="saleRow">
 <div class="field saleDateTime"><button type="button" onclick="openSaleDT(${i})">${saleDTText(x)}</button></div><i></i>
 <div class="field"><select onchange="sales[${i}].type=this.value;sales[${i}].related='';renderSales()"><option ${x.type==="公售"?"selected":""}>公售</option><option ${x.type==="卡友"?"selected":""}>卡友</option><option ${x.type==="會員"?"selected":""}>會員</option><option ${x.type==="其它"?"selected":""}>其它</option></select></div><i></i>
 <div>${relatedHTML(x,i)}</div><button class="del" onclick="sales.splice(${i},1);renderSales()">刪除</button></div>`).join("");$("#saleRows").innerHTML=h||'<div class="muted" style="padding:4px">尚未新增售票資訊</div>'}
-function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員"||x.type==="其它")return `<div class="field related"><input value="${x.related||""}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
+function relatedHTML(x,i){if(x.type==="卡友")return `<div class="bankwrap"><div class="field"><select onchange="sales[${i}].related=this.value">${["中國信託","國泰世華","台新銀行","玉山銀行","台北富邦","永豐銀行"].map(b=>`<option ${x.related===b?"selected":""}>${b}</option>`).join("")}</select></div><button class="smallplus" onclick="addBank(${i})">＋</button></div>`;if(x.type==="會員"||x.type==="其它")return `<div class="field related"><input value="${esc(x.related||"")}" oninput="sales[${i}].related=this.value"></div>`;return '<div class="field" style="justify-content:center">—</div>'}
 function addBank(i){let b=prompt("輸入銀行名稱");if(b){sales[i].related=b;renderSales()}}
 function currentSystem(){return systems.find(x=>x.name===$("#ticketSystem").value)||systems[0]}
 function systemChanged(){renderPickup()}
-function renderPickup(){let box=$("#pickupBody");if(!box||!systems.length)return;let s=currentSystem();let vals={};box.querySelectorAll("[data-key]").forEach(e=>vals[e.dataset.key]=e.value);let fields=s.required.map((r,j)=>`<div class="pickupItem"><div class="label">${r}</div><div class="field"><input data-key="${r}" value="${vals[r]||""}"></div></div>`).join("");box.innerHTML=`<div class="pickupGrid">${fields}</div><div class="label">取票方式</div><div class="field"><select id="pickupMethod">${s.methods.map(m=>`<option ${m===s.defaultMethod?"selected":""}>${m}</option>`).join("")}</select></div>`}
+function renderPickup(){let box=$("#pickupBody");if(!box||!systems.length)return;let s=currentSystem();let vals=Object.create(null);box.querySelectorAll("[data-key]").forEach(e=>vals[e.dataset.key]=e.value);let fields=s.required.map((r,j)=>`<div class="pickupItem"><div class="label">${esc(r)}</div><div class="field"><input data-key="${esc(r)}" value="${esc(vals[r]||"")}"></div></div>`).join("");box.innerHTML=`<div class="pickupGrid">${fields}</div><div class="label">取票方式</div><div class="field"><select id="pickupMethod">${s.methods.map(m=>`<option ${m===s.defaultMethod?"selected":""}>${esc(m)}</option>`).join("")}</select></div>`}
 function openManager(){renderManageSelect();$("#manager").style.display="block";loadManager()}
 function closeManager(){$("#manager").style.display="none"}
-function renderManageSelect(){let s=$("#manageSystem");s.innerHTML=systems.map((x,i)=>`<option value="${i}">${x.name}</option>`).join("")}
+function renderManageSelect(){let s=$("#manageSystem");s.innerHTML=systems.map((x,i)=>`<option value="${i}">${esc(x.name)}</option>`).join("")}
 function loadManager(){let x=systems[+$("#manageSystem").value||0];$("#manageName").value=x.name;$("#requiredList").innerHTML=x.required.map((v,i)=>mgrRow("required",v,i)).join("");$("#methodList").innerHTML=x.methods.map((v,i)=>mgrRow("method",v,i)).join("");renderDefault(x)}
-function mgrRow(t,v,i){return `<div class="managerRow"><div class="field"><input value="${v}" data-${t}="${i}"></div><button class="smallplus" onclick="${t==="required"?"addRequired()":"addMethod()"}">＋</button><button class="smallplus" onclick="removeMgr('${t}',${i})">−</button></div>`}
-function renderDefault(x){$("#defaultMethod").innerHTML=x.methods.map(m=>`<option ${m===x.defaultMethod?"selected":""}>${m}</option>`).join("")}
+function mgrRow(t,v,i){return `<div class="managerRow"><div class="field"><input value="${esc(v)}" data-${t}="${i}"></div><button class="smallplus" onclick="${t==="required"?"addRequired()":"addMethod()"}">＋</button><button class="smallplus" onclick="removeMgr('${t}',${i})">−</button></div>`}
+function renderDefault(x){$("#defaultMethod").innerHTML=x.methods.map(m=>`<option ${m===x.defaultMethod?"selected":""}>${esc(m)}</option>`).join("")}
 function collectManager(){let idx=+$("#manageSystem").value||0,x=systems[idx];x.name=$("#manageName").value||x.name;x.required=[...document.querySelectorAll("[data-required]")].map(e=>e.value).filter(Boolean);x.methods=[...document.querySelectorAll("[data-method]")].map(e=>e.value).filter(Boolean);x.defaultMethod=$("#defaultMethod").value||x.methods[0]||"";return x}
 function addRequired(){let x=collectManager();x.required.push("新欄位");loadManager()}
 function addMethod(){let x=collectManager();x.methods.push("新方式");loadManager()}
@@ -1782,7 +1824,9 @@ function applyPersonalSettings(){
  document.body.classList.toggle("personalSmall",s.fontSize==="small");
  document.body.classList.toggle("personalLarge",s.fontSize==="large");
  document.body.classList.toggle("personalCompact",!!s.compactReminders);
- let page=document.querySelector(".page.on")?.id||"home",target=page==="home"?"home":page==="category"?({工作:"work",店務:"store",交易:"trade",活動:"activity"}[currentCategory]||""):"";
+ $("#home")?.classList.add("wallpaperContent");
+ $("#category")?.classList.toggle("wallpaperContent",["工作","店務","交易","活動","歷史資料"].includes(currentCategory));
+ let page=document.querySelector(".page.on")?.id||"home",target=page==="home"?"home":page==="category"?({工作:"work",店務:"store",交易:"trade",活動:"activity",歷史資料:"home"}[currentCategory]||""):"";
  let activeBg=target?(s.backgrounds?.[target]||""):"";
  document.body.classList.toggle("hasPersonalBg",!!activeBg);
 
@@ -1802,9 +1846,238 @@ function applyPersonalSettings(){
  }
 }
 
+// V67 手動跨裝置備份：只讀本機檔案，不連線、不自動覆蓋或刪除紀錄。
+const TRANSFER_FORMAT="my-secretary-backup",TRANSFER_LIMIT=40*1024*1024;
+let transferDraft=null,transferReadToken=0,transferRecovery=null;
+function transferAssert(condition,message){if(!condition)throw new Error(message)}
+function transferObject(value){return !!value&&typeof value==="object"&&!Array.isArray(value)}
+function checkTransferTree(value,depth=0,budget={left:300000}){
+ transferAssert(depth<30&&--budget.left>0,"檔案結構過深或資料量過大。");
+ if(value&&typeof value==="object")Object.entries(value).forEach(([key,item])=>{
+   transferAssert(!["__proto__","prototype","constructor"].includes(key),"檔案含有不支援的欄位。");
+   checkTransferTree(item,depth+1,budget);
+ });
+}
+function transferImage(data){return typeof data==="string"&&/^data:image\/(?:png|jpe?g|webp|gif|bmp|avif|heic|heif);base64,[A-Za-z0-9+/=\r\n]+$/i.test(data)}
+function transferDate(value){
+ if(value==null||value==="")return true;
+ if(typeof value!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;
+ const date=new Date(value+"T00:00:00Z");return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===value;
+}
+function transferTime(value){return value==null||value===""||(typeof value==="string"&&/^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d{1,3})?)?$/.test(value))}
+function validateTransferRecord(input,index){
+ const prefix="第 "+(index+1)+" 筆：";
+ transferAssert(transferObject(input),prefix+"不是有效紀錄。");
+ const r={...input},id=typeof r.id==="string"&&/^\d+$/.test(r.id)?Number(r.id):r.id;
+ transferAssert(Number.isSafeInteger(id)&&id>0,prefix+"資料編號無效。");r.id=id;
+ if(r.main==="面交")r.main="交易";
+ transferAssert(["工作","店務","交易","活動"].includes(r.main),prefix+"分類無效。");
+ for(const key of ["sub","title","vendor","date","time","location","memo","contact","ticketSystem","pickupMethod","orderNumber","orderLine","accountPeriod","employeeName","orderRepeatUnit"]){
+   transferAssert(r[key]==null||typeof r[key]==="string",prefix+key+" 必須是文字。");
+ }
+ transferAssert(transferDate(r.date)&&transferTime(r.time),prefix+"日期或時間格式無效。");
+ for(const key of ["completed","delete30","orderRepeat"])transferAssert(r[key]==null||typeof r[key]==="boolean",prefix+key+" 狀態無效。");
+ for(const key of ["completedAt","createdAt","updatedAt"])transferAssert(r[key]==null||(typeof r[key]==="number"&&Number.isFinite(r[key])&&r[key]>=0),prefix+key+" 時間戳記無效。");
+ transferAssert(r.orderRepeatEvery==null||(Number.isInteger(Number(r.orderRepeatEvery))&&Number(r.orderRepeatEvery)>0),prefix+"重複間隔無效。");
+ transferAssert(r.orderRepeatUnit==null||["day","week","month"].includes(r.orderRepeatUnit),prefix+"重複單位無效。");
+ for(const key of ["orderDayparts","storeTypes","tradeTypes"])transferAssert(r[key]==null||(Array.isArray(r[key])&&r[key].every(x=>typeof x==="string")),prefix+key+" 格式無效。");
+ if(r.pickup!=null)transferAssert(transferObject(r.pickup)&&Object.values(r.pickup).every(x=>typeof x==="string"),prefix+"取票資訊無效。");
+ for(const key of ["photos","sales","storeGoods","tradeItems"]){
+   if(r[key]==null)continue;
+   transferAssert(Array.isArray(r[key])&&r[key].every(transferObject),prefix+key+" 明細格式無效。");
+   r[key].forEach(item=>{
+     if(key==="photos"){
+       transferAssert(transferImage(item.data)&&typeof item.at==="number"&&Number.isFinite(item.at)&&item.at>=0,prefix+"照片格式無效，請使用網站匯出的原始備份。");
+     }else if(key==="sales"){
+       transferAssert(transferDate(item.date)&&transferTime(item.time),prefix+"售票日期時間無效。");
+       for(const field of ["type","related"])transferAssert(item[field]==null||typeof item[field]==="string",prefix+"售票欄位無效。");
+     }else{
+       transferAssert((item.name==null||typeof item.name==="string")&&(item.barcode==null||typeof item.barcode==="string"),prefix+"商品名稱或條碼無效。");
+       transferAssert((typeof item.qty==="number"||typeof item.qty==="string")&&Number.isFinite(Number(item.qty))&&Number(item.qty)>0,prefix+"商品數量無效。");
+     }
+   });
+ }
+ return r;
+}
+function validateTransferSettings(raw){
+ if(raw==null)return null;
+ transferAssert(transferObject(raw),"背景及個人設定格式無效。");
+ const s=defaultPersonalSettings();
+ for(const [key,choices] of Object.entries({theme:["light","dark","system"],fontSize:["small","normal","large"],bgSize:["cover","contain","auto"],bgPosition:["center center","center top","center bottom","left center","right center"]})){
+   if(raw[key]!=null){transferAssert(choices.includes(raw[key]),"個人設定的 "+key+" 無效。");s[key]=raw[key]}
+ }
+ for(const key of ["showAllData","showReminders","compactReminders"]){if(raw[key]!=null){transferAssert(typeof raw[key]==="boolean","首頁顯示設定無效。");s[key]=raw[key]}}
+ transferAssert(raw.backgrounds==null||transferObject(raw.backgrounds),"桌布格式無效。");
+ transferAssert(raw.backgroundStyles==null||transferObject(raw.backgroundStyles),"桌布調整格式無效。");
+ for(const key of ["home","work","store","trade","activity"]){
+   const bg=raw.backgrounds?.[key]||(key==="home"&&!raw.backgrounds?raw.bg:"")||"";
+   transferAssert(bg===""||transferImage(bg),"桌布圖片格式無效。");s.backgrounds[key]=bg;
+   if(raw.backgroundStyles?.[key]!=null){transferAssert(transferObject(raw.backgroundStyles[key]),"桌布調整格式無效。");s.backgroundStyles[key]=normalizeBackgroundStyle(raw.backgroundStyles[key])}
+ }
+ s.reminderDays=normalizeReminderDays(raw.reminderDays);return s;
+}
+function validateTransferSystems(raw){
+ if(raw==null)return null;
+ transferAssert(Array.isArray(raw)&&raw.length>0,"售票系統設定不可為空。");
+ const names=new Set();
+ raw.forEach(s=>{
+   transferAssert(transferObject(s)&&typeof s.name==="string"&&s.name.trim()&&!names.has(s.name),"售票系統名稱無效或重複。");names.add(s.name);
+   transferAssert(Array.isArray(s.required)&&s.required.every(x=>typeof x==="string"&&!['__proto__','prototype','constructor'].includes(x)),"售票系統欄位無效。");
+   transferAssert(Array.isArray(s.methods)&&s.methods.every(x=>typeof x==="string")&&typeof s.defaultMethod==="string","取票方式設定無效。");
+ });return raw;
+}
+function validateTransferBundle(raw){
+ checkTransferTree(raw);
+ transferAssert(transferObject(raw)&&raw.format===TRANSFER_FORMAT,"這不是小秘書備份檔，請選擇由「匯出備份」下載的 JSON 檔。");
+ transferAssert(raw.formatVersion===1,"備份格式版本不支援，請先將兩台裝置更新到最新版。");
+ transferAssert(Array.isArray(raw.records)&&raw.records.length<=25000,"紀錄清單格式無效或超過 25,000 筆。");
+ const ids=new Set(),imported=raw.records.map((r,i)=>{const valid=validateTransferRecord(r,i);transferAssert(!ids.has(valid.id),"備份內有重複資料編號，請重新匯出。");ids.add(valid.id);return valid});
+ const dismissed=raw.homeDismissed||{};
+ transferAssert(transferObject(dismissed)&&Object.entries(dismissed).every(([key,value])=>/^\d+\|[^|\u0000-\u001f]{1,150}$/.test(key)&&typeof value==="number"&&Number.isFinite(value)&&value>=0),"提醒狀態格式無效。");
+ return {...raw,records:imported,personalSettings:validateTransferSettings(raw.personalSettings),ticketSystems:validateTransferSystems(raw.ticketSystems),homeDismissed:dismissed};
+}
+function stableTransferValue(value){
+ if(Array.isArray(value))return '['+value.map(stableTransferValue).join(',')+']';
+ if(transferObject(value))return '{'+Object.keys(value).sort().map(k=>JSON.stringify(k)+':'+stableTransferValue(value[k])).join(',')+'}';
+ return JSON.stringify(value);
+}
+function planTransferMerge(local,incoming,choices={}){
+ const byId=new Map(local.map(r=>[String(r.id),r])),replace=new Map(),added=[],conflicts=[],acceptedIds=new Set();let duplicate=0;
+ for(const r of incoming){
+   const key=String(r.id),old=byId.get(key);
+   if(!old){added.push(r);acceptedIds.add(key)}
+   else if(stableTransferValue(old)===stableTransferValue(r))duplicate++;
+   else{conflicts.push({id:key,local:old,incoming:r});if(choices[key]==="incoming"){replace.set(key,r);acceptedIds.add(key)}}
+ }
+ return {records:[...added,...local.map(r=>replace.get(String(r.id))||r)],added:added.length,duplicate,conflicts,replaced:replace.size,acceptedIds};
+}
+function readTransferState(){
+ const raw={};for(const key of [DATAKEY,SYSKEY,PERSONAL_KEY,HOMEDISMISSKEY])raw[key]=localStorage.getItem(key);
+ const saved=raw[DATAKEY]===null?records:JSON.parse(raw[DATAKEY]);
+ transferAssert(Array.isArray(saved),"本機紀錄無法讀取，請先保留原檔，不要匯入。");
+ return {raw,records:saved.map(r=>r.main==="面交"?{...r,main:"交易"}:r),ticketSystems:raw[SYSKEY]===null?systems:JSON.parse(raw[SYSKEY]),personalSettings:raw[PERSONAL_KEY]===null?defaultPersonalSettings():JSON.parse(raw[PERSONAL_KEY]),homeDismissed:raw[HOMEDISMISSKEY]===null?{}:JSON.parse(raw[HOMEDISMISSKEY])};
+}
+function makeSecretaryBackup(local){return {format:TRANSFER_FORMAT,formatVersion:1,appVersion:"V67",exportedAt:new Date().toISOString(),records:local.records,personalSettings:local.personalSettings,ticketSystems:local.ticketSystems,homeDismissed:local.homeDismissed}}
+function downloadSecretaryBundle(bundle,prefix="my-secretary-backup"){
+ const blob=new Blob([JSON.stringify(bundle)],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
+ const now=new Date(),pad=n=>String(n).padStart(2,"0"),stamp=[now.getFullYear(),pad(now.getMonth()+1),pad(now.getDate())].join("")+"-"+[pad(now.getHours()),pad(now.getMinutes()),pad(now.getSeconds())].join("");
+ a.href=url;a.download=prefix+"-"+stamp+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+function exportSecretaryBackup(){
+ try{downloadSecretaryBundle(makeSecretaryBackup(readTransferState()))}
+ catch(error){alert("無法匯出備份："+error.message)}
+}
+function openTransferImport(){
+ closeSideDrawer();transferReadToken++;transferDraft=null;transferRecovery=null;
+ $("#transferFile").value="";$("#transferError").textContent="";$("#transferSuccess").textContent="";$("#transferDecision").textContent="";
+ $("#transferPreview").classList.add("hidden");$("#transferRecoveryBtn").classList.add("hidden");
+ $("#transferApplySettings").checked=false;$("#transferApplySystems").checked=false;
+ $("#transferConfirm").disabled=true;$("#transferModal").classList.remove("hidden");$("#transferChoose").focus();
+}
+function closeTransferImport(){transferReadToken++;transferDraft=null;$("#transferModal")?.classList.add("hidden");$(".menuBtn")?.focus()}
+function chooseTransferFile(){ $("#transferFile").click() }
+function readTransferFile(event){
+ const file=event.target.files?.[0];if(!file)return;
+ const token=++transferReadToken;transferDraft=null;
+ $("#transferConfirm").disabled=true;$("#transferPreview").classList.add("hidden");$("#transferSuccess").textContent="";$("#transferError").textContent="";$("#transferDecision").textContent="";
+ $("#transferApplySettings").checked=false;$("#transferApplySystems").checked=false;
+ if(file.size>TRANSFER_LIMIT){$("#transferError").textContent="檔案超過 40 MB，請確認選擇的是小秘書 JSON 備份。";return}
+ $("#transferError").textContent="正在讀取備份，尚未修改本機資料…";
+ const reader=new FileReader();
+ reader.onload=()=>{
+   if(token!==transferReadToken)return;
+   try{
+     const data=validateTransferBundle(JSON.parse(String(reader.result).replace(/^\uFEFF/,"")));
+     transferDraft={data,name:file.name,local:readTransferState(),choices:{}};
+     $("#transferError").textContent="";renderTransferPreview();
+   }catch(error){transferDraft=null;$("#transferError").textContent="無法匯入："+error.message+"\n本機資料未變更。"}
+ };
+ reader.onerror=()=>{if(token===transferReadToken)$("#transferError").textContent="檔案讀取失敗，本機資料未變更。"};reader.readAsText(file);
+}
+function transferRecordLabel(r){return [r.main,r.sub,r.title||r.vendor||r.employeeName||"未命名",r.date,r.time,r.completed?"已完成":"未完成"].filter(Boolean).join("／")}
+function renderTransferPreview(){
+ if(!transferDraft)return;
+ const {data,name,local,choices}=transferDraft,plan=planTransferMerge(local.records,data.records,choices);
+ const exported=new Date(data.exportedAt),time=Number.isFinite(exported.getTime())?exported.toLocaleString():"未提供";
+ $("#transferSummary").textContent="檔案："+name+"\n匯出時間："+time+"\n檔案共 "+data.records.length+" 筆（已完成 "+data.records.filter(r=>r.completed).length+" 筆、照片 "+data.records.reduce((n,r)=>n+(r.photos?.length||0),0)+" 張）\n新增 "+plan.added+" 筆 · 完全相同跳過 "+plan.duplicate+" 筆 · 內容衝突 "+plan.conflicts.length+" 筆";
+ $("#transferConflicts").innerHTML=plan.conflicts.map(c=>'<div class="transferConflict"><strong>'+esc(transferRecordLabel(c.incoming))+'</strong><p>本機：'+esc(transferRecordLabel(c.local))+'\n備註：'+esc(c.local.memo||"—")+'\n照片：'+(c.local.photos?.length||0)+' 張</p><p>檔案：'+esc(transferRecordLabel(c.incoming))+'\n備註：'+esc(c.incoming.memo||"—")+'\n照片：'+(c.incoming.photos?.length||0)+' 張</p><details><summary>比較完整欄位（照片只顯示張數）</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px">'+esc(transferRecordCompare(c.local,c.incoming))+'</pre></details><label>這筆資料採用哪一版？<select data-transfer-id="'+c.id+'" aria-label="'+esc(transferRecordLabel(c.incoming))+'"><option value="local">保留本機資料</option><option value="incoming">改用檔案資料（覆蓋這筆）</option></select></label></div>').join("");
+ $("#transferConflicts").querySelectorAll("select[data-transfer-id]").forEach(select=>{
+   select.value=choices[select.dataset.transferId]||"local";
+   select.onchange=()=>{transferDraft.choices[select.dataset.transferId]=select.value;updateTransferDecision()};
+ });
+ $("#transferConflictSection").classList.toggle("hidden",!plan.conflicts.length);
+ $("#transferSettingsOption").classList.toggle("hidden",!data.personalSettings);
+ $("#transferSystemsOption").classList.toggle("hidden",!data.ticketSystems);
+ $("#transferPreview").classList.remove("hidden");updateTransferDecision();
+}
+function transferRecordCompare(local,incoming){
+ const compact=r=>Object.fromEntries(Object.entries(r).map(([k,v])=>[k,k==="photos"?(v?.length||0)+" 張":v]));
+ return "本機\n"+JSON.stringify(compact(local),null,2)+"\n\n檔案\n"+JSON.stringify(compact(incoming),null,2);
+}
+function setAllTransferChoices(value){
+ if(!transferDraft)return;
+ planTransferMerge(transferDraft.local.records,transferDraft.data.records).conflicts.forEach(c=>transferDraft.choices[c.id]=value);
+ renderTransferPreview();
+}
+function updateTransferDecision(){
+ if(!transferDraft)return;
+ const p=planTransferMerge(transferDraft.local.records,transferDraft.data.records,transferDraft.choices);
+ const settings=!!transferDraft.data.personalSettings&&$("#transferApplySettings").checked,sys=!!transferDraft.data.ticketSystems&&$("#transferApplySystems").checked;
+ $("#transferDecision").textContent="將新增 "+p.added+" 筆、覆蓋 "+p.replaced+" 筆；其餘本機資料保留。"+(settings?" 將替換本機背景與個人設定。":"")+(sys?" 將替換本機售票系統設定。":"");
+ $("#transferConfirm").disabled=!(p.added||p.replaced||settings||sys);
+}
+function writeTransferChanges(changes){
+ const before=new Map(),written=[];
+ try{
+   for(const [key,value] of changes){before.set(key,localStorage.getItem(key));localStorage.setItem(key,value);written.push(key)}
+   return {ok:true};
+ }catch(error){
+   let restored=true;
+   for(const key of written.reverse()){try{const old=before.get(key);if(old===null)localStorage.removeItem(key);else localStorage.setItem(key,old)}catch(rollbackError){restored=false}}
+   return {ok:false,restored,error};
+ }
+}
+function confirmTransferImport(){
+ if(!transferDraft)return;
+ try{
+   const current=readTransferState();
+   if(Object.keys(current.raw).some(key=>current.raw[key]!==transferDraft.local.raw[key])){
+     transferDraft.local=current;transferDraft.choices={};renderTransferPreview();$("#transferError").textContent="本機資料在預覽後有更新，已重新比對。請再確認衝突選擇後匯入。";return;
+   }
+   const plan=planTransferMerge(current.records,transferDraft.data.records,transferDraft.choices),data=transferDraft.data;
+   const useSettings=!!data.personalSettings&&$("#transferApplySettings").checked,useSystems=!!data.ticketSystems&&$("#transferApplySystems").checked;
+   if(!plan.added&&!plan.replaced&&!useSettings&&!useSystems)return;
+   if(!confirm("確定匯入？\n新增 "+plan.added+" 筆、覆蓋 "+plan.replaced+" 筆。\n"+(useSettings?"背景、提醒及個人設定將改用檔案版本。\n":"")+(useSystems?"售票系統設定將改用檔案版本。\n":"")+"未選擇覆蓋的本機資料都會保留；檔案內沒有的紀錄不會被刪除。"))return;
+   // 先保存匯入前快照供失敗復原；只有持久儲存全數成功後才更新畫面資料。
+   transferRecovery=makeSecretaryBackup(current);
+   const changes=[];
+   if(plan.added||plan.replaced){
+     changes.push([DATAKEY,JSON.stringify(plan.records)]);
+     const dismissed={...current.homeDismissed};
+     Object.keys(dismissed).forEach(key=>{if(plan.acceptedIds.has(key.split('|')[0]))delete dismissed[key]});
+     Object.entries(data.homeDismissed).forEach(([key,value])=>{if(plan.acceptedIds.has(key.split('|')[0]))dismissed[key]=value});
+     if(stableTransferValue(dismissed)!==stableTransferValue(current.homeDismissed))changes.push([HOMEDISMISSKEY,JSON.stringify(dismissed)]);
+   }
+   if(useSettings)changes.push([PERSONAL_KEY,JSON.stringify(data.personalSettings)]);
+   if(useSystems)changes.push([SYSKEY,JSON.stringify(data.ticketSystems)]);
+   const result=writeTransferChanges(changes);
+   if(!result.ok){
+     $("#transferError").textContent=result.restored?"匯入未成功，已保留原有資料。可能是瀏覽器容量不足；請先匯出備份，減少照片或不要勾選匯入背景後再試。":"儲存失敗且未能完整還原。請立即下載「匯入前復原備份」，保留後再重新整理。";
+     if(!result.restored){$("#transferRecoveryBtn").classList.remove("hidden");$("#transferConfirm").disabled=true;transferDraft=null}
+     return;
+   }
+   records=plan.records;if(useSystems)systems=data.ticketSystems;
+   editingId=null;currentRecordId=null;personalBgDraft="";personalBgDirty=false;personalBgRequest++;
+   transferDraft=null;$("#transferConfirm").disabled=true;$("#transferPreview").classList.add("hidden");$("#transferError").textContent="";
+   $("#transferSuccess").textContent="匯入完成：新增 "+plan.added+" 筆、覆蓋 "+plan.replaced+" 筆、相同資料跳過 "+plan.duplicate+" 筆。\n本機目前共 "+records.length+" 筆；已完成資料仍在歷史資料中。";
+   $("#transferRecoveryBtn").classList.remove("hidden");
+   renderHome();show("home");
+ }catch(error){$("#transferError").textContent="處理未完成："+error.message+"。請保留備份檔，不要清除瀏覽器資料。"}
+}
+function downloadTransferRecovery(){if(transferRecovery)downloadSecretaryBundle(transferRecovery,"my-secretary-before-import")}
 document.addEventListener("DOMContentLoaded",applyPersonalSettings);
 window.addEventListener("resize",()=>{applyPersonalSettings();if(!$("#personalSettingsModal")?.classList.contains("hidden"))renderPersonalBgPreview()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();closePersonalSettings()}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("#transferModal")?.classList.contains("hidden")){closeTransferImport();return}closeSideDrawer();closePersonalSettings()}});
 </script>
 <div id="drawerShell" class="drawerShell hidden" aria-hidden="true">
 <div id="sideDrawerBackdrop" class="drawerBackdrop" onpointerdown="beginDrawerBackdrop(event)" onpointercancel="drawerBackdropStart=null" onclick="closeDrawerFromBackdrop(event)"></div>
@@ -1831,6 +2104,14 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
     <button type="button" class="drawerItem" onclick="drawerOpenSearch()"><span class="drawerIcon">🔍</span><span class="drawerLabel">搜尋</span></button>
     <a class="drawerItem drawerExternal" href="https://kitty7520-source.github.io/Money/" target="_blank" rel="noopener" onclick="closeSideDrawer()"><span class="drawerIcon">💰</span><span class="drawerLabel">日常隨手記帳</span><span>↗</span></a>
 
+    <div id="drawerTransferGroup" class="drawerGroup">
+      <button type="button" class="drawerItem" aria-expanded="false" onclick="toggleDrawerGroup('drawerTransferGroup')"><span class="drawerIcon">🗄️</span><span class="drawerLabel">資料管理</span><span class="drawerArrow">⌄</span></button>
+      <div class="drawerSub">
+        <button type="button" class="drawerItem" onclick="exportSecretaryBackup()"><span>📥 匯出備份（下載 JSON）</span></button>
+        <button type="button" class="drawerItem" onclick="openTransferImport()"><span>📤 匯入備份（合併資料）</span></button>
+        <div class="personalHint" style="padding:0 12px">手動跨裝置移轉，不會自動連線。</div>
+      </div>
+    </div>
     <div id="drawerSettingsGroup" class="drawerGroup">
       <button type="button" class="drawerItem" onclick="toggleDrawerGroup('drawerSettingsGroup')"><span class="drawerIcon">⚙️</span><span class="drawerLabel">設定</span><span class="drawerArrow">⌄</span></button>
       <div class="drawerSub">
@@ -1839,8 +2120,37 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
       </div>
     </div>
   </div>
-  <div class="drawerFooter">我的小秘書 V63</div>
+  <div class="drawerFooter">我的小秘書 V67</div>
 </aside>
+</div>
+
+<div id="transferModal" class="transferModal hidden" role="dialog" aria-modal="true" aria-labelledby="transferTitle">
+  <div class="transferPanel">
+    <div class="drawerHead"><h2 id="transferTitle">匯入備份・合併資料</h2><button type="button" class="drawerClose" aria-label="關閉匯入" onclick="closeTransferImport()">✕</button></div>
+    <p>在另一台裝置匯出 JSON 備份，傳送檔案到這台裝置後選擇匯入。支援全部分類、完成狀態與照片。</p>
+    <p>只移轉小秘書資料，不會自動加入 Google／iPhone 行事曆。備份含個人資料與照片，未加密，請妥善保管；不要上傳到公開 GitHub。</p>
+    <div class="transferActions">
+      <button id="transferChoose" type="button" class="btn" onclick="chooseTransferFile()">選擇 JSON 備份檔</button>
+      <button type="button" class="red" onclick="exportSecretaryBackup()">先下載本機備份</button>
+    </div>
+    <input id="transferFile" type="file" accept=".json,application/json" class="hidden" onchange="readTransferFile(event)">
+    <div id="transferError" class="transferError" role="alert"></div>
+    <div id="transferSuccess" class="transferSuccess" role="status"></div>
+    <button id="transferRecoveryBtn" type="button" class="red hidden" onclick="downloadTransferRecovery()">下載匯入前復原備份</button>
+    <div id="transferPreview" class="hidden">
+      <div id="transferSummary" class="transferSummary" style="white-space:pre-wrap"></div>
+      <p>新增資料會加入，完全相同資料會跳過。同一編號但內容不同，預設保留本機，可逐筆改用檔案版本。編號由系統管理，不用自己填寫。</p>
+      <section id="transferConflictSection" class="hidden">
+        <h3>內容衝突處理</h3>
+        <div class="transferActions"><button type="button" class="red" onclick="setAllTransferChoices('local')">全部保留本機</button><button type="button" class="red" onclick="setAllTransferChoices('incoming')">全部改用檔案版本</button></div>
+        <div id="transferConflicts"></div>
+      </section>
+      <label id="transferSettingsOption" class="transferCheck"><input id="transferApplySettings" type="checkbox" onchange="updateTransferDecision()"><span>一併套用檔案的桌布、裁切、透明度、提醒天數與個人設定（替換本機設定）</span></label>
+      <label id="transferSystemsOption" class="transferCheck"><input id="transferApplySystems" type="checkbox" onchange="updateTransferDecision()"><span>一併套用檔案的售票系統設定（含自訂取票欄位，替換本機設定）</span></label>
+      <p>不會依檔案刪除本機紀錄；若一台裝置刪除資料，另一台仍需手動刪除。照片沿用原先的「30 天後刪除」設定。</p>
+    </div>
+    <div class="transferFooter"><div id="transferDecision" role="status"></div><div class="transferActions"><button id="transferConfirm" type="button" class="btn" disabled onclick="confirmTransferImport()">確認匯入</button><button type="button" class="red" onclick="closeTransferImport()">關閉</button></div></div>
+  </div>
 </div>
 
 <div id="personalSettingsModal" class="personalModal hidden">
@@ -1852,10 +2162,10 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
 
     <div class="personalSection">
       <b>背景圖片</b>
-      <div class="personalHint">五個頁面的圖片、裁切、縮放及透明度各自儲存。預覽框就是螢幕可見範圍，框外部分會裁掉，原圖仍保留。</div>
+      <div class="personalHint">首頁與歷史資料共用背景設定；工作、店務、交易、活動各自儲存。圖片、裁切、縮放及透明度會一起套用。預覽框就是螢幕可見範圍，框外部分會裁掉，原圖仍保留。</div>
       <label>套用頁面
         <select id="personalBgTarget" onchange="refreshPersonalBgPreview()">
-          <option value="home">首頁</option>
+          <option value="home">首頁／歷史資料</option>
           <option value="work">全部資料－工作</option>
           <option value="store">全部資料－店務</option>
           <option value="trade">全部資料－交易</option>
@@ -1873,7 +2183,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSideDrawer();c
         <div id="personalBgPreviewWrap" class="personalBgPreviewWrap" role="img" aria-label="背景套用後預覽，可拖曳調整位置，或使用下方位置滑桿" onpointerdown="startBackgroundDrag(event)" onpointermove="moveBackgroundDrag(event)" onpointerup="personalBgDrag=null" onpointercancel="personalBgDrag=null" onlostpointercapture="personalBgDrag=null">
           <div id="personalBgPreviewStage" class="personalBgPreviewStage">
             <div id="personalBgPreview" class="personalBgLayer"></div>
-            <div id="personalBgPreviewContent" class="personalBgPreviewContent" inert aria-hidden="true"></div>
+            <div id="personalBgPreviewContent" class="personalBgPreviewContent wallpaperContent" inert aria-hidden="true"></div>
           </div>
         </div>
         <div id="personalBgStatus" class="personalBgStatus" role="status"></div>
