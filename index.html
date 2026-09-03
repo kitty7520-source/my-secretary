@@ -820,7 +820,11 @@ body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperConten
 .transferError{color:#a63429;white-space:pre-wrap;font-size:14px;line-height:1.5}
 .transferSuccess{color:#216643;white-space:pre-wrap;line-height:1.6}
 .transferFooter{position:sticky;bottom:-16px;background:#faf7f4;padding:10px 0;margin-top:10px;border-top:1px solid #dbcbbf}
-</style></head><body><div class="app">
+</style><style>
+#catTabs.activityTabs{display:flex;flex-wrap:wrap;gap:6px}
+#catTabs.activityTabs .subtab{flex:1 0 auto;min-height:44px;padding:8px;white-space:nowrap}
+</style>
+</head><body><div class="app">
 <section id="home" class="page on"><div class="top"><button type="button" class="menuBtn" aria-label="開啟選單" aria-controls="sideDrawer" aria-expanded="false" onclick="openSideDrawer(event)"><span></span><span></span><span></span></button><h1>我的小秘書</h1><button class="btn" onclick="openAdd()">＋</button></div>
 <div class="homeCard"><b>全部資料</b><div class="tiles storeHomeTiles"><button class="tile" onclick="openCategory('工作')">💼<br>工作</button><button class="tile" onclick="openCategory('店務')">🏪<br>店務</button><button class="tile" onclick="openCategory('交易')">👥<br>交易</button><button class="tile" onclick="openCategory('活動')">🗓<br>活動</button></div></div>
 <div id="calendarNotice" class="hidden" role="status" style="margin:12px 0;line-height:1.6"><span id="calendarNoticeText"></span> <a id="calendarRetry" target="_blank" rel="noopener noreferrer">開啟 Google 行事曆</a> <button type="button" class="btn" onclick="this.parentElement.classList.add('hidden')">關閉提示</button></div>
@@ -900,6 +904,7 @@ body.personalDark :is(#home,#category,#personalBgPreviewContent).wallpaperConten
 <div class="label">姓名／聯絡方式</div><div class="field"><input id="tradeContact"></div>
 <div class="label">備註</div><textarea id="tradeMemo" class="memo"></textarea>
 </div>
+<div id="activityAttendeesUI" class="hidden"><label class="label" for="activityAttendees">與會者</label><div class="field"><input id="activityAttendees" placeholder="可填寫多人，以頓號分隔，例如：小美、小芳" autocomplete="off"></div></div>
 <div id="storeUI" class="hidden"></div>
 <div class="card"><div class="secHead">🖼 <span class="grow">活動照片（附件）</span></div>
 <div class="attachBtns"><label class="ab">📷 拍照<input id="camera" type="file" accept="image/*" capture="environment" multiple hidden></label><i></i><label class="ab">📁 選擇檔案<input id="files" type="file" accept="image/*" multiple hidden></label><i></i><span class="muted" id="count">0 張</span></div>
@@ -1062,7 +1067,7 @@ function storeDetailHTML(r){
  return html;
 }
 function recordMatchesSearch(r,q){
- let terms=[r.title,r.vendor,r.location,r.memo,r.main,r.sub,r.contact,r.orderNumber,r.orderLine,r.accountPeriod,r.employeeName,...(r.storeTypes||[]),...(r.storeGoods||[]).flatMap(x=>[x.barcode,x.name])];
+ let terms=[r.title,r.vendor,r.location,r.memo,r.attendees,r.main,r.sub,r.contact,r.orderNumber,r.orderLine,r.accountPeriod,r.employeeName,...(r.storeTypes||[]),...(r.storeGoods||[]).flatMap(x=>[x.barcode,x.name])];
  return terms.some(v=>String(v||"").toLowerCase().includes(q));
 }
 function addTradeItem(item){tradeItems.push(item||{name:"",qty:1});renderTradeItems()}
@@ -1085,6 +1090,7 @@ function ui(){
  $("#vendorField").classList.toggle("hidden",!order);
  $("#formMoneyLink").classList.toggle("hidden",!(trade||m==="活動"));
 
+ $("#activityAttendeesUI").classList.toggle("hidden",m!=="活動");
  $("#concertUI").classList.toggle("hidden",!concert);
  $("#tradeUI").classList.toggle("hidden",!trade);
  $("#activityOtherUI").classList.toggle("hidden",!otherActivity);
@@ -1140,7 +1146,7 @@ $("#camera").onchange=e=>pickFiles(e.target.files);$("#files").onchange=e=>pickF
 function renderPhotos(){$("#count").textContent=photos.length+" 張";$("#thumbs").innerHTML=photos.map((p,i)=>`<img class="thumb" src="${p.data}" onclick="togglePreview(${i})">`).join("");if(previewIndex>=photos.length){previewIndex=-1;$("#preview").style.display="none"}}
 function togglePreview(i){if(previewIndex===i){previewIndex=-1;$("#preview").style.display="none"}else{previewIndex=i;$("#previewImg").src=photos[i].data;$("#preview").style.display="block"}}
 function deleteCurrentPhoto(){if(previewIndex<0)return;photos.splice(previewIndex,1);previewIndex=-1;$("#preview").style.display="none";renderPhotos()}
-function openAdd(){$("#addGoogleCalendar").checked=false;editingId=null;resetStoreForms();sales=[{date:"",time:"",type:"公售",related:""}];tradeItems=[];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["location","title","memo","vendor","eventName","eventLocation","tradeLocation","tradeTitle","tradeContact","tradeMemo","otherActivityLocation","otherActivityTitle","otherActivityMemo"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});["tradeBuy","tradeSell","tradeSwap"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#tradeDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=nowTime;$("#otherActivityDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#otherActivityTime").value=nowTime;$("#del30").checked=false;["orderMorning","orderNoon","orderEvening"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});ui();updateMainDTButtons();renderTradeItems();renderPhotos();if($("#orderRepeat"))$("#orderRepeat").checked=false;if($("#orderRepeatEvery"))$("#orderRepeatEvery").value="1";if($("#orderRepeatUnit"))$("#orderRepeatUnit").value="day";toggleOrderRepeat();show("form")}
+function openAdd(){$("#addGoogleCalendar").checked=false;editingId=null;resetStoreForms();sales=[{date:"",time:"",type:"公售",related:""}];tradeItems=[];photos=[];previewIndex=-1;$("#main").value="工作";let now=new Date(),todayISO=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0"),nowTime=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");$("#genericDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");["activityAttendees","location","title","memo","vendor","eventName","eventLocation","tradeLocation","tradeTitle","tradeContact","tradeMemo","otherActivityLocation","otherActivityTitle","otherActivityMemo"].forEach(id=>{let e=$("#"+id);if(e)e.value=""});["tradeBuy","tradeSell","tradeSwap"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});$("#time").value=nowTime;$("#eventDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"活動日期");$("#eventTime").value=nowTime;$("#tradeDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#tradeTime").value=nowTime;$("#otherActivityDateBox").innerHTML=dateInputHTML(todayISO,`this.dataset.sync=this.value`,"日期");$("#otherActivityTime").value=nowTime;$("#del30").checked=false;["orderMorning","orderNoon","orderEvening"].forEach(id=>{let e=$("#"+id);if(e)e.checked=false});ui();updateMainDTButtons();renderTradeItems();renderPhotos();if($("#orderRepeat"))$("#orderRepeat").checked=false;if($("#orderRepeatEvery"))$("#orderRepeatEvery").value="1";if($("#orderRepeatUnit"))$("#orderRepeatUnit").value="day";toggleOrderRepeat();show("form")}
 function cleanup(){let now=Date.now(),changed=false;records.forEach(r=>{if(r.delete30&&r.photos){let n=r.photos.filter(p=>now-p.at<2592000000);if(n.length!==r.photos.length){r.photos=n;changed=true}}});if(changed)localStorage.setItem(DATAKEY,JSON.stringify(records))}
 // V68: prepare one event for the user's confirmation; never mark it as synced.
 function googleCalendarURL(rec){
@@ -1158,7 +1164,7 @@ function googleCalendarURL(rec){
  const title=rec.main==="工作"&&rec.sub==="下單"?[rec.vendor,rec.title].filter(Boolean).join("－"):(rec.title||rec.vendor||rec.employeeName);
  const lines=["我的小秘書｜"+category];
  const add=(label,value)=>{if(value)lines.push(label+"："+value)};
- add("廠商",rec.vendor);add("備註",rec.memo);add("時段",(rec.orderDayparts||[]).join("／"));
+ add("廠商",rec.vendor);if(rec.main==="活動")add("與會者",rec.attendees);add("備註",rec.memo);add("時段",(rec.orderDayparts||[]).join("／"));
  add("處理類型",(rec.storeTypes||[]).join("／"));add("單號",rec.orderNumber);add("訂單行",rec.orderLine);add("帳期",rec.accountPeriod);
  if(rec.orderRepeat)add("重複下單","此行程僅加入所選日期，如需重複請在 Google 行事曆設定");
  const params=new URLSearchParams({action:"TEMPLATE",text:title||category||"我的小秘書",dates,ctz:"Asia/Taipei",location:rec.location||"",details:lines.join("\n")});
@@ -1176,6 +1182,7 @@ function save(){
  let m=$("#main").value,s=$("#sub").value;
  let concert=m==="活動"&&s==="演唱會",order=m==="工作"&&s==="下單",trade=m==="交易";
  let rec={id:editingId||Date.now(),main:m,sub:trade?"":s,vendor:$("#vendor").value,photos,delete30:$("#del30").checked};
+ if(m==="活動")rec.attendees=$("#activityAttendees").value.trim();
  if(m==="店務"){
    let data=readStoreRecord(s);if(!data)return;
    Object.assign(rec,data);
@@ -1443,9 +1450,9 @@ function renderCategory(){
    tabs.className="subtabs two";
    tabs.innerHTML=ss.map(x=>`<button class="subtab ${currentSub===x?"active":""}" onclick="currentSub='${x}';renderCategory()">${x}</button>`).join("")
  }else if(currentCategory==="活動"){
-   let ss=["演唱會","展覽","電影","其它"];
-   if(!currentSub)currentSub="演唱會";
-   tabs.className="subtabs four";
+   let ss=["全部資料","演唱會","展覽","電影","其它"];
+   if(!currentSub)currentSub="全部資料";
+   tabs.className="subtabs activityTabs";
    tabs.innerHTML=ss.map(x=>`<button class="subtab ${currentSub===x?"active":""}" onclick="currentSub='${x}';renderCategory()">${x}</button>`).join("")
  }else{
    currentSub="";
@@ -1456,7 +1463,7 @@ function renderCategory(){
  let q=currentSearchQuery.toLowerCase();
  let matchesCategory=r=>currentCategory==="歷史資料"?!!r.completed:
    currentCategory==="搜尋結果"?recordMatchesSearch(r,q):
-   ((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory) && (!currentSub||r.sub===currentSub);
+   ((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory) && (!currentSub||(currentCategory==="活動"&&currentSub==="全部資料")||r.sub===currentSub);
  let arr=records.filter(matchesCategory);
 
  // 依日期／時間由近到遠；沒有時間的排在同日後面
@@ -1481,10 +1488,10 @@ function renderCategory(){
  `).join(""):'<div class="homeCard muted">目前沒有紀錄</div>'
 }
 function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function detailRecords(){let q=currentSearchQuery.toLowerCase();let arr=records.filter(r=>currentCategory==="歷史資料"?!!r.completed:currentCategory==="搜尋結果"?recordMatchesSearch(r,q):((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory)&&(!currentSub||r.sub===currentSub));arr.sort((a,b)=>{if(Boolean(a.completed)!==Boolean(b.completed))return a.completed?1:-1;let ad=a.date||"9999-12-31",bd=b.date||"9999-12-31";if(ad!==bd)return ad.localeCompare(bd);return(a.time||"23:59").localeCompare(b.time||"23:59")});return arr}
+function detailRecords(){let q=currentSearchQuery.toLowerCase();let arr=records.filter(r=>currentCategory==="歷史資料"?!!r.completed:currentCategory==="搜尋結果"?recordMatchesSearch(r,q):((currentCategory==="交易"&&(r.main==="交易"||r.main==="面交"))||r.main===currentCategory)&&(!currentSub||(currentCategory==="活動"&&currentSub==="全部資料")||r.sub===currentSub));arr.sort((a,b)=>{if(Boolean(a.completed)!==Boolean(b.completed))return a.completed?1:-1;let ad=a.date||"9999-12-31",bd=b.date||"9999-12-31";if(ad!==bd)return ad.localeCompare(bd);return(a.time||"23:59").localeCompare(b.time||"23:59")});return arr}
 function updateDetailNav(){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),p=$("#prevRecordBtn"),n=$("#nextRecordBtn");if(p)p.disabled=i<=0;if(n)n.disabled=i<0||i>=arr.length-1}
 function moveDetail(step){let arr=detailRecords(),i=arr.findIndex(r=>r.id===currentRecordId),next=arr[i+step];if(next)openDetail(next.id)}
-function openDetail(id){currentRecordId=id;let r=records.find(x=>x.id===id);if(!r)return;let rows=[];let add=(k,v)=>{if(v)rows.push(`<div class="detailLine"><div class="detailLabel">${k}</div><div class="detailValue">${esc(v)}</div></div>`)};add("分類",[(r.main==="面交"?"交易":r.main),r.sub].filter(Boolean).join("／"));add("標題／活動名稱",r.title);add("廠商",r.vendor);add("日期",r.date);if(r.main==="工作"&&r.sub==="下單")add("時段",(r.orderDayparts||[]).join("／"));else add("時間",r.time);add("地點",r.location);
+function openDetail(id){currentRecordId=id;let r=records.find(x=>x.id===id);if(!r)return;let rows=[];let add=(k,v)=>{if(v)rows.push(`<div class="detailLine"><div class="detailLabel">${k}</div><div class="detailValue">${esc(v)}</div></div>`)};add("分類",[(r.main==="面交"?"交易":r.main),r.sub].filter(Boolean).join("／"));add("標題／活動名稱",r.title);add("廠商",r.vendor);add("日期",r.date);if(r.main==="工作"&&r.sub==="下單")add("時段",(r.orderDayparts||[]).join("／"));else add("時間",r.time);add("地點",r.location);if(r.main==="活動")add("與會者",r.attendees);
 if(r.main==="活動"&&r.sub==="演唱會"){add("售票系統",r.ticketSystem);if(r.sales?.length)rows.push(`<div class="card"><b>售票資訊</b>${r.sales.map(s=>`<div class="detailLine"><div class="detailValue">${[s.date,s.time,s.type,s.related].filter(Boolean).map(esc).join(" ｜ ")}</div></div>`).join("")}</div>`);if(r.pickup&&Object.keys(r.pickup).length)rows.push(`<div class="card"><b>取票資訊</b>${Object.entries(r.pickup).map(([k,v])=>`<div class="detailLine"><span class="detailLabel">${esc(k)}</span><div class="detailValue">${esc(v)}</div></div>`).join("")}${r.pickupMethod?`<div class="detailLine"><span class="detailLabel">取票方式</span><div class="detailValue">${esc(r.pickupMethod)}</div></div>`:""}</div>`)}
 if(r.main==="店務")rows.push(storeDetailHTML(r));
 add("備註",r.memo);if(r.photos?.length)rows.push(`<div class="card"><b>活動照片</b><div class="detailPhotos">${r.photos.map(p=>`<img class="detailPhoto" src="${p.data}" onclick="this.style.width=this.style.width==='100%'?'70px':'100%';this.style.height=this.style.width==='100%'?'auto':'70px'">`).join("")}</div></div>`);$("#detailBody").innerHTML=`<div class="card">${rows.join("")}</div>`;show("detail");updateDetailNav()}
@@ -1510,6 +1517,7 @@ function editCurrent(){
 
  $("#addGoogleCalendar").checked=false;
  editingId=r.id;
+ $("#activityAttendees").value=r.main==="活動"?(r.attendees||""):"";
 
  let mainEl=$("#main");
  if(!mainEl)return;
@@ -1917,7 +1925,7 @@ function validateTransferRecord(input,index){
  transferAssert(Number.isSafeInteger(id)&&id>0,prefix+"資料編號無效。");r.id=id;
  if(r.main==="面交")r.main="交易";
  transferAssert(["工作","店務","交易","活動"].includes(r.main),prefix+"分類無效。");
- for(const key of ["sub","title","vendor","date","time","location","memo","contact","ticketSystem","pickupMethod","orderNumber","orderLine","accountPeriod","employeeName","orderRepeatUnit"]){
+ for(const key of ["sub","title","vendor","date","time","location","memo","attendees","contact","ticketSystem","pickupMethod","orderNumber","orderLine","accountPeriod","employeeName","orderRepeatUnit"]){
    transferAssert(r[key]==null||typeof r[key]==="string",prefix+key+" 必須是文字。");
  }
  transferAssert(transferDate(r.date)&&transferTime(r.time),prefix+"日期或時間格式無效。");
