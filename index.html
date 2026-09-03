@@ -1226,6 +1226,17 @@ function completeHomeRecords(ids,ev){
  records=updated;
  renderHome();
 }
+// 每一筆售票獨立完成，不改變演唱會本身的完成狀態。
+function completeHomeSale(id,index,ev){
+ if(ev){ev.stopPropagation();ev.preventDefault()}
+ let r=records.find(x=>String(x.id)===String(id));
+ if(!r||!r.sales?.[index]||r.sales[index].completed)return;
+ let updated=records.map(x=>x===r?{...x,sales:x.sales.map((sale,i)=>i===index?{...sale,completed:true,completedAt:Date.now()}:sale)}:x);
+ try{localStorage.setItem(DATAKEY,JSON.stringify(updated))}
+ catch(error){alert("無法儲存完成狀態，資料仍保留未完成。請確認瀏覽器儲存空間或權限後再試。");return}
+ records=updated;
+ renderHome();
+}
 function openHomeDetail(id){let r=records.find(x=>String(x.id)===String(id));if(!r)return;currentCategory=r.main==="面交"?"交易":r.main;currentSub=r.sub||"";openDetail(r.id)}
 function calendarDayNumber(v){if(!v)return null;let p=v.split("-").map(Number);if(p.length!==3||p.some(n=>!Number.isFinite(n)))return null;return Math.floor(Date.UTC(p[0],p[1]-1,p[2])/86400000)}
 function todayDayNumber(){let n=new Date();return Math.floor(Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())/86400000)}
@@ -1323,7 +1334,7 @@ function renderHome(){
    (r.sales||[]).forEach((sale,index)=>{
      let stage=saleReminderStage(sale);
      let keyStage=stage?stage+"-"+index:null;
-     if(stage&&!dismissed[homeReminderKey(r.id,keyStage)])saleItems.push({r,sale,index,stage:keyStage});
+     if(!sale.completed&&stage&&!dismissed[homeReminderKey(r.id,keyStage)])saleItems.push({r,sale,index,stage:keyStage});
    });
  });
  saleItems.sort((a,b)=>{
@@ -1334,7 +1345,7 @@ function renderHome(){
 
  let otherItems=records.filter(r=>{
    if(r.completed||(r.main==="工作"&&r.sub==="下單"))return false;
-   if(r.main==="活動"&&r.sub==="演唱會"&&(r.sales||[]).some(s=>saleReminderStage(s)))return false;
+   if(r.main==="活動"&&r.sub==="演唱會"&&saleItems.some(item=>item.r===r))return false;
    let stage=reminderStageForRecord(r);
    return stage&&!dismissed[homeReminderKey(r.id,stage)];
  }).map(r=>({r,stage:reminderStageForRecord(r)}));
@@ -1366,7 +1377,7 @@ function renderHome(){
 
  saleItems.forEach(({r,sale,index,stage})=>{
    let title=r.title||"未命名活動";
-   let actionIndex=homeActions.push(ev=>completeHomeRecords([r.id],ev))-1;
+   let actionIndex=homeActions.push(ev=>completeHomeSale(r.id,index,ev))-1;
    groups["活動"]+=`<div class="homeCard homeReminder">
      <div class="homeReminderMain">
        <button type="button" class="homeReminderTitle" onclick="openHomeDetail(${JSON.stringify(r.id)})">
